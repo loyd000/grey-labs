@@ -1,0 +1,114 @@
+[
+  {
+    "width": 1440,
+    "heroActions": {
+      "x": 56,
+      "y": 745.3125,
+      "width": 478.078125,
+      "height": 63.59375,
+      "bottom": 808.90625
+    },
+    "frame": {
+      "x": 295.046875,
+      "y": 1525.203125,
+      "width": 849.90625,
+      "height": 499.9375,
+      "bottom": 2025.140625
+    },
+    "skip": {
+      "x": 12,
+      "y": -67.1875,
+      "width": 145.75,
+      "height": 55.1875,
+      "bottom": -12
+    },
+    "about": [
+      "34px",
+      "34px",
+      "34px"
+    ],
+    "labels": [
+      {
+        "text": "Independent software development",
+        "font": "\"Instrument Sans\", sans-serif",
+        "size": "18px"
+      },
+      {
+        "text": "Services",
+        "font": "\"Instrument Sans\", sans-serif",
+        "size": "18px"
+      },
+      {
+        "text": "Process",
+        "font": "\"Instrument Sans\", sans-serif",
+        "size": "18px"
+      },
+      {
+        "text": "FAQ",
+        "font": "\"Instrument Sans\", sans-serif",
+        "size": "18px"
+      },
+      {
+        "text": "Start a project",
+        "font": "\"Instrument Sans\", sans-serif",
+        "size": "18px"
+      }
+    ]
+  },
+  {
+    "width": 390,
+    "heroActions": {
+      "x": 20,
+      "y": 535.515625,
+      "width": 350,
+      "height": 139.1875,
+      "bottom": 674.703125
+    },
+    "frame": {
+      "x": 20,
+      "y": 1973.9375,
+      "width": 351.90625,
+      "height": 212,
+      "bottom": 2185.9375
+    },
+    "skip": {
+      "x": 12,
+      "y": -67.1875,
+      "width": 145.75,
+      "height": 55.1875,
+      "bottom": -12
+    },
+    "about": [
+      "24px",
+      "24px",
+      "24px"
+    ],
+    "labels": [
+      {
+        "text": "Independent software development",
+        "font": "\"Instrument Sans\", sans-serif",
+        "size": "16px"
+      },
+      {
+        "text": "Services",
+        "font": "\"Instrument Sans\", sans-serif",
+        "size": "16px"
+      },
+      {
+        "text": "Process",
+        "font": "\"Instrument Sans\", sans-serif",
+        "size": "16px"
+      },
+      {
+        "text": "FAQ",
+        "font": "\"Instrument Sans\", sans-serif",
+        "size": "16px"
+      },
+      {
+        "text": "Start a project",
+        "font": "\"Instrument Sans\", sans-serif",
+        "size": "16px"
+      }
+    ]
+  }
+]

@@ -1,0 +1,197 @@
+{
+  "layouts": [
+    {
+      "width": 320,
+      "scrollWidth": 320,
+      "small": [],
+      "heroContainsMedia": true
+    },
+    {
+      "width": 390,
+      "scrollWidth": 390,
+      "small": [],
+      "heroContainsMedia": true
+    },
+    {
+      "width": 768,
+      "scrollWidth": 768,
+      "small": [],
+      "heroContainsMedia": true
+    },
+    {
+      "width": 1024,
+      "scrollWidth": 1024,
+      "small": [],
+      "heroContainsMedia": true
+    },
+    {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "small": [],
+      "heroContainsMedia": true
+    }
+  ],
+  "errors": [],
+  "limitations": [
+    "Direct-file Chromium checks; hosted delivery and real-device checks remain unverified.",
+    "No package.json or configured typecheck, lint, or bundle step exists."
+  ],
+  "fonts": {
+    "faces": [
+      {
+        "family": "Instrument Sans",
+        "status": "loaded"
+      },
+      {
+        "family": "Azeret Mono",
+        "status": "loaded"
+      }
+    ],
+    "checks": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "zoom": {
+    "width": 1440,
+    "scrollWidth": 1440
+  },
+  "structure": {
+    "sections": 7,
+    "duplicates": [],
+    "missing": []
+  },
+  "filtered": [
+    "02Order syncReview"
+  ],
+  "workflow": "ACTION\n\nNotify the team\n\nNotification channel\n\nTeam updates",
+  "keyboard": "Menu, Escape, selection, disclosure, filter, workflow, and project navigation passed.",
+  "inquiry": {
+    "disabled": true,
+    "external": [],
+    "query": "",
+    "status": "Inquiries are currently unavailable. This form cannot send messages."
+  },
+  "noScript": {
+    "menu": true,
+    "sections": 7,
+    "visible": true,
+    "overflow": false,
+    "disabled": true
+  },
+  "motion": {
+    "hero": [
+      {
+        "state": "running",
+        "frames": [
+          {
+            "offset": null,
+            "easing": "linear",
+            "composite": "auto",
+            "transform": "translateY(14px)",
+            "computedOffset": 0
+          },
+          {
+            "offset": null,
+            "easing": "linear",
+            "composite": "auto",
+            "transform": "none",
+            "computedOffset": 1
+          }
+        ]
+      }
+    ],
+    "work": [
+      {
+        "state": "running",
+        "time": 76.08499999151097,
+        "frames": [
+          {
+            "offset": null,
+            "easing": "linear",
+            "composite": "auto",
+            "transform": "translateY(20px)",
+            "opacity": "0",
+            "computedOffset": 0
+          },
+          {
+            "offset": null,
+            "easing": "linear",
+            "composite": "auto",
+            "transform": "none",
+            "opacity": "1",
+            "computedOffset": 1
+          }
+        ]
+      }
+    ],
+    "about": [
+      {
+        "state": "running",
+        "time": 83.40799999551373,
+        "frames": [
+          {
+            "offset": null,
+            "easing": "linear",
+            "composite": "auto",
+            "transform": "translateX(-10px)",
+            "opacity": "0",
+            "computedOffset": 0
+          },
+          {
+            "offset": null,
+            "easing": "linear",
+            "composite": "auto",
+            "transform": "none",
+            "opacity": "1",
+            "computedOffset": 1
+          }
+        ]
+      }
+    ],
+    "process": [
+      {
+        "state": "running",
+        "time": 83.28899999635775,
+        "frames": [
+          {
+            "offset": null,
+            "easing": "linear",
+            "composite": "auto",
+            "color": "rgb(165, 164, 159)",
+            "computedOffset": 0
+          },
+          {
+            "offset": null,
+            "easing": "linear",
+            "composite": "auto",
+            "color": "rgb(234, 231, 222)",
+            "computedOffset": 1
+          }
+        ]
+      }
+    ],
+    "preference": {
+      "visible": true,
+      "running": 0
+    },
+    "restored": {
+      "scroll": 3805,
+      "heroRunning": 0,
+      "visible": true
+    },
+    "stability": {
+      "visible": true,
+      "played": true,
+      "animations": 0
+    },
+    "reducedInitial": {
+      "visible": true,
+      "heroRunning": 0
+    }
+  }
+}

@@ -1,0 +1,151 @@
+{
+  "about": {
+    "played": "true",
+    "animations": [
+      {
+        "state": "running",
+        "frames": [
+          {
+            "offset": null,
+            "easing": "linear",
+            "composite": "auto",
+            "transform": "translateX(-10px)",
+            "opacity": "0",
+            "computedOffset": 0
+          },
+          {
+            "offset": null,
+            "easing": "linear",
+            "composite": "auto",
+            "transform": "none",
+            "opacity": "1",
+            "computedOffset": 1
+          }
+        ]
+      }
+    ]
+  },
+  "processMotion": [
+    {
+      "state": "true",
+      "frames": [
+        {
+          "offset": null,
+          "easing": "linear",
+          "composite": "auto",
+          "color": "rgb(165, 164, 159)",
+          "computedOffset": 0
+        },
+        {
+          "offset": null,
+          "easing": "linear",
+          "composite": "auto",
+          "color": "rgb(234, 231, 222)",
+          "computedOffset": 1
+        }
+      ]
+    },
+    {
+      "state": "true",
+      "frames": [
+        {
+          "offset": null,
+          "easing": "linear",
+          "composite": "auto",
+          "color": "rgb(165, 164, 159)",
+          "computedOffset": 0
+        },
+        {
+          "offset": null,
+          "easing": "linear",
+          "composite": "auto",
+          "color": "rgb(234, 231, 222)",
+          "computedOffset": 1
+        }
+      ]
+    },
+    {
+      "state": "true",
+      "frames": [
+        {
+          "offset": null,
+          "easing": "linear",
+          "composite": "auto",
+          "color": "rgb(165, 164, 159)",
+          "computedOffset": 0
+        },
+        {
+          "offset": null,
+          "easing": "linear",
+          "composite": "auto",
+          "color": "rgb(234, 231, 222)",
+          "computedOffset": 1
+        }
+      ]
+    },
+    {
+      "state": "true",
+      "frames": [
+        {
+          "offset": null,
+          "easing": "linear",
+          "composite": "auto",
+          "color": "rgb(165, 164, 159)",
+          "computedOffset": 0
+        },
+        {
+          "offset": null,
+          "easing": "linear",
+          "composite": "auto",
+          "color": "rgb(234, 231, 222)",
+          "computedOffset": 1
+        }
+      ]
+    }
+  ],
+  "next": {
+    "left": 282,
+    "max": 282
+  },
+  "previous": 0,
+  "validation": {
+    "invalid": true,
+    "emailType": "email",
+    "disabled": true
+  },
+  "integrity": {
+    "duplicates": [],
+    "brokenAnchors": [],
+    "overflow": false,
+    "panels": [
+      {
+        "h": 270,
+        "scroll": 270,
+        "overflow": false
+      },
+      {
+        "h": 304,
+        "scroll": 304,
+        "overflow": false
+      },
+      {
+        "h": 273,
+        "scroll": 273,
+        "overflow": false
+      },
+      {
+        "h": 306,
+        "scroll": 306,
+        "overflow": false
+      }
+    ]
+  },
+  "focus": {
+    "outline": "solid"
+  },
+  "zoom200": {
+    "scrollWidth": 1440,
+    "viewport": 1440,
+    "overflow": false
+  }
+}

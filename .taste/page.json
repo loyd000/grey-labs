@@ -1,0 +1,513 @@
+{
+  "version": 1,
+  "page": {
+    "title": "Grey Labs | Custom software development",
+    "route": "/",
+    "description": "Custom software built around your business. Explore Grey Labs concept studies, services, approach, and project inquiries."
+  },
+  "architecture": {
+    "contract": "This page helps business owners decide whether Grey Labs fits their software project. The business outcome is a qualified project inquiry. The primary conversion is Start a project, leading to the inquiry form, whose sending remains disabled until a submission service is configured.",
+    "mode": "persuade_convert",
+    "novelty": "low",
+    "grid": "One 12-column grid within a 1440px maximum content width. Use existing desktop gutters of 48–64px and compact gutters of 20–24px. Reference-specific column spans, full-width frames, and intentional empty columns sit on this grid.",
+    "signatureRule": "Derive the opening composition from meridian-01-hero: oversized left-aligned copy occupies the upper-left area of one broad media field, while supporting copy and actions sit lower on the same alignment. Substitute the existing native Operations workspace for photography because the required subject is software. Do not introduce a second decorative motif.",
+    "rhythm": "Retain seven substantive sections plus footer. Additional sections would repeat the existing offer. Move from orientation to inspectable concepts, service fit, working approach, delivery steps, practical questions, and inquiry. Alternate broad media, open editorial rows, and prose without wrapping every block in cards. Use existing brand tokens throughout. Assumption: the current reference-lock protocol governs this blueprint's composition mappings; these differ from the older approved mappings recorded in the brief. This phase makes no implementation or artifact changes."
+  },
+  "navigation": [
+    {
+      "label": "Work",
+      "target": "#work"
+    },
+    {
+      "label": "Services",
+      "target": "#services"
+    },
+    {
+      "label": "Process",
+      "target": "#process"
+    },
+    {
+      "label": "About",
+      "target": "#about"
+    },
+    {
+      "label": "Start a project",
+      "target": "#contact"
+    }
+  ],
+  "navigationDesign": {
+    "layoutCase": "reference-navigation",
+    "layout": "Use meridian-01-hero navigation geometry. In its 1505×1045 desktop reference, the inset bar spans approximately x24–76%, y2–7.5%. Retain the Grey Labs wordmark and three-bar mark at left, section links in the middle, and the ivory Start a project control at right. Permit a wider bar to accommodate five required destinations without reducing targets below 44px. In the 1024×1536 compact reference, the bar spans x1.7–98.3%, y1–9.3%, with identity left and menu control right. Use existing brand surfaces and controls.",
+    "behavior": [
+      "Place Skip to content before navigation and target #main.",
+      "The wordmark links to #hero.",
+      "Use a native button with aria-expanded and aria-controls for the compact menu.",
+      "Close the compact menu after destination selection or Escape and return focus to the menu button when appropriate.",
+      "Keep navigation outside reveal-transform ancestors.",
+      "Apply visible focus immediately and 160ms hover or press feedback without delaying navigation."
+    ],
+    "transformation": {
+      "compact": "Show identity and menu button. Expand links in source order beneath the bar, with Start a project last and visually primary. Preserve keyboard access and readable labels.",
+      "medium": "Use expanded navigation only when every label and target fits without wrapping; otherwise retain the compact menu.",
+      "expanded": "Use the inset horizontal bar, identity left, destinations centrally aligned, and primary action right."
+    }
+  },
+  "sections": [
+    {
+      "id": "hero",
+      "layoutFamily": "hero",
+      "layoutCases": [
+        "meridian-01-hero"
+      ],
+      "referenceDirectionId": "meridian-01-hero",
+      "purpose": "Establish the offer and provide a direct route to project inquiry.",
+      "userQuestion": "Does Grey Labs build the kind of software my business needs?",
+      "stage": "orient",
+      "dependencies": [],
+      "evidence": [
+        "The validated brief identifies Grey Labs as an independent custom software development company.",
+        "The existing implementation contains the native Operations workspace concept and the two required hero actions."
+      ],
+      "copy": {
+        "eyebrow": "INDEPENDENT SOFTWARE DEVELOPMENT",
+        "heading": "custom software.\nbuilt around your business.",
+        "body": [
+          "Grey Labs designs and develops web applications, business systems, and integrations built for the way you work."
+        ],
+        "callsToAction": [
+          {
+            "label": "Start a project",
+            "target": "#contact"
+          },
+          {
+            "label": "View our work",
+            "target": "#work"
+          }
+        ]
+      },
+      "layout": "Reference map: desktop 1505×1045, one full-width media field occupying about 95% of section height; eyebrow at x2.5%, y16%; two-line heading box x2.5–58%, y20–39%; support x2.5–32%, y73–81%; action area x2.5–39%, y84–90%. Compact reference 1024×1536: heading x5.8–94%, y35–48%, two lines; support x5.8–80%, y55–64%; action area starts x5.8%, y68%; one continuous media field. Preserve the large interval between headline and supporting block. Required software adaptation: replace the photograph with the existing native Operations workspace, preserving a broad frame and meaningful interface detail. Reserve a solid existing dark surface behind copy so text never obscures working controls; the workspace can occupy the right-hand media region on desktop and its own full-width region after actions on compact. This separation is required for interface readability and keyboard operation. Use Instrument Sans while retaining the reference's relative heading scale and tight leading. Keep one headline and one supporting block. Caption the interface Operations workspace · Concept study. Native interface content includes Customer portal, Order sync, Operations dashboard, priority tasks, and recent activity. These are representative records, not delivery evidence. Retain the existing sidebar-to-main proportion of approximately 18:82 where space allows.",
+      "motion": {
+        "purpose": "spatial_continuity",
+        "trigger": "load",
+        "behavior": "On initial top-of-page load, introduce the heading, supporting block, actions, and workspace in that order using opacity and translateY of 14–20px. Use 80ms offsets, capped at 240ms total. Keep navigation stationary. Skip entrance preparation at restored scroll positions and keep all content visible if scripting fails.",
+        "durationMs": 700,
+        "easing": "cubic-bezier(0.23, 1, 0.32, 1)",
+        "reducedMotion": "Show final states immediately, cancel only owned entrance animations, and retain fully operable controls."
+      },
+      "componentNeeds": [
+        "operations_overview_visual"
+      ],
+      "assetNeeds": [],
+      "transformation": {
+        "compact": "Read eyebrow, headline, support, primary action, secondary action, then workspace. Allow necessary heading wrapping without shrinking interface text. Stack sidebar navigation above readable project and task groups.",
+        "medium": "Keep the left copy alignment and broad workspace frame. Separate interface and copy if their readable regions would overlap.",
+        "expanded": "Reproduce the reference's upper-left headline and lower-left support alignment beside one dominant native workspace field."
+      }
+    },
+    {
+      "id": "work",
+      "layoutFamily": "feature",
+      "layoutCases": [
+        "ariyana-studio-08-showreel"
+      ],
+      "referenceDirectionId": "ariyana-studio-08-showreel",
+      "purpose": "Make the software offer concrete through two inspectable concept studies.",
+      "userQuestion": "What could software built around a workflow look like?",
+      "stage": "evaluate",
+      "dependencies": [
+        "hero"
+      ],
+      "evidence": [
+        "The existing implementation contains Operations workspace and Connected workflows as native concept demonstrations.",
+        "The validated brief explicitly identifies both studies as concepts rather than commissioned projects."
+      ],
+      "copy": {
+        "heading": "selected work.",
+        "body": [
+          "Concept studies exploring practical software workflows.",
+          "Operations workspace",
+          "Business systems and internal tools · Concept study",
+          "The brief: bring project updates, priorities, and team activity into one view.",
+          "The concept: a workspace for projects, tasks, and recent activity.",
+          "Connected workflows",
+          "Integrations and automation · Concept study",
+          "The brief: make the movement of information between tools easier to follow.",
+          "The concept: an editor showing an order trigger, validation, a system update, and a team notification."
+        ],
+        "callsToAction": [
+          {
+            "label": "Explore Operations workspace",
+            "target": "#operations_details"
+          },
+          {
+            "label": "Explore Connected workflows",
+            "target": "#workflows_details"
+          }
+        ]
+      },
+      "layout": "Reference map: desktop 1586×992, one centered rounded media frame at x21–79%, y23–77%, approximately 1.7:1, with large short text flanking its horizontal midpoint. Compact reference 1212×1297: frame x4–96%, y24–76%, approximately 1.66:1, with flanking words moved inside the frame. Preserve the generous surrounding space, single dominant frame, crop boundary, and restrained radius. Use selected and work. as the two visually separated portions of one accessible heading. Required content adaptation: replace the reel and play button with the existing native concept viewer and explicit Previous project and Next project controls. Never imply that a video exists. Display one project at a time in the dominant frame, with its Concept study label and brief directly adjacent below the frame; keep both projects available without scripting. Expanded details use native disclosures beneath each project's description. On compact, place the heading immediately above the interactive frame instead of over controls. Operations uses readable project, priority, and activity groups. Connected workflows contains four ordered step buttons: New order received, Validate order details, Update business system, Notify the team. Selecting a step exposes its representative configuration. Do not add a showreel asset, portrait, metric, or testimonial. This composition is selected for its single media focus; unused feature references would require unrelated photography or unsupported metrics.",
+      "motion": {
+        "purpose": "spatial_continuity",
+        "trigger": "scroll_enter",
+        "behavior": "Reveal the individual media frame once with opacity and translateY from 20px over 650ms; introduce its adjacent caption 80ms later. Observe the visual group, not the entire section. Leave the horizontal viewer ancestor untransformed. Project navigation uses a separate 220ms native scroll transition and never advances automatically.",
+        "durationMs": 650,
+        "easing": "cubic-bezier(0.23, 1, 0.32, 1)",
+        "reducedMotion": "Show frames and captions immediately and switch projects without animated scrolling."
+      },
+      "componentNeeds": [
+        "operations_overview_visual",
+        "workflow_overview_visual"
+      ],
+      "assetNeeds": [],
+      "transformation": {
+        "compact": "Move heading words above the frame. Show one complete readable project view, its concept identification, description, details control, and project navigation. Reflow interface groups rather than scaling down a desktop capture.",
+        "medium": "Keep one centered media frame with short heading words outside only when they fit. Preserve descriptions and controls beneath it.",
+        "expanded": "Retain the wide centered frame, flanking heading, substantial negative space, and adjacent project explanation."
+      }
+    },
+    {
+      "id": "services",
+      "layoutFamily": "feature",
+      "layoutCases": [
+        "ritovex-04-services"
+      ],
+      "referenceDirectionId": "ritovex-04-services",
+      "purpose": "Help visitors identify a suitable service.",
+      "userQuestion": "Which service fits the problem I need to solve?",
+      "stage": "qualify",
+      "dependencies": [
+        "work"
+      ],
+      "evidence": [
+        "The validated brief specifies four services and their existing benefit-focused descriptions.",
+        "The current page presents these services as editorial rows."
+      ],
+      "copy": {
+        "eyebrow": "SERVICES",
+        "heading": "software that fits.",
+        "body": [
+          "Your workflows are specific. Your software should support them.",
+          "Custom web applications: Purpose-built applications for your customers and team.",
+          "Business systems and internal tools: Software that supports your operations and simplifies daily work.",
+          "Integrations and automation: Connect your tools and reduce repetitive manual tasks.",
+          "Maintenance and improvements: Keep your software reliable and adapt it as your needs change."
+        ],
+        "callsToAction": []
+      },
+      "layout": "Reference map: desktop 1469×1071, centered label around y10%; one-line heading x22–78%, y14–19%; two-line support x29–72%, y21–26%; four editorial rows x4–96%, spanning y34–92%. Row indices occupy about 4% width, titles and descriptions begin near x9%, and separators span the content width. The reference's second row is expanded and a tilted media box occupies x59–79%, y39–68%. Compact reference 944×1666: centered two-line heading x18–82%, y11–20%; support x14–86%, y23–31%; four rows x6–94%, beginning at y35%, with every description exposed and no media. Required adaptation: keep every service description visible at all widths, omit the unrelated abstract image, and omit arrow controls because services are not separate destinations or disclosures. Preserve the editorial row geometry, large type, divider spacing, and compact text indentation. Allow the longer internal-tools title to wrap naturally. There are zero media boxes and no cards. Reuse approved brand surfaces and divider tokens.",
+      "motion": {
+        "purpose": "none",
+        "trigger": "none",
+        "behavior": "Keep the editorial list static and immediately readable. Do not make rows react like controls.",
+        "durationMs": 0,
+        "easing": "linear",
+        "reducedMotion": "Identical static presentation."
+      },
+      "componentNeeds": [],
+      "assetNeeds": [],
+      "transformation": {
+        "compact": "Retain all four descriptions. Align indices in a narrow left column and text in the remaining width; reduce title size only within existing responsive tokens.",
+        "medium": "Use the same four open rows with wider text measures and consistent separators.",
+        "expanded": "Keep the centered introduction and full-width numbered editorial rows, with intentional space to the right of short descriptions."
+      }
+    },
+    {
+      "id": "about",
+      "layoutFamily": "about",
+      "layoutCases": [
+        "ollef-03-studio"
+      ],
+      "referenceDirectionId": "ollef-03-studio",
+      "purpose": "Explain the studio's identity and working approach without unsupported credentials.",
+      "userQuestion": "Who is behind Grey Labs, and how will they approach my project?",
+      "stage": "explain",
+      "dependencies": [
+        "services"
+      ],
+      "evidence": [
+        "The validated brief identifies Lloyd as the founder of Grey Labs.",
+        "The approved brand calls for an ivory About section.",
+        "The existing page includes the thoughtful-approach statement and native workflow detail."
+      ],
+      "copy": {
+        "heading": "a thoughtful approach to building.",
+        "body": [
+          "Grey Labs is an independent software development company founded by Lloyd.",
+          "Good software starts with understanding how people work. We ask useful questions, keep the scope clear, and pay attention to the details people use every day.",
+          "Lloyd · Founder, Grey Labs",
+          "Workflow detail · Concept study"
+        ],
+        "callsToAction": []
+      },
+      "layout": "Reference map: desktop 1681×936, two large open prose blocks aligned x3.2%, occupying approximately 51% width; first block y18–42% across five lines, second y48–67% across four lines; approximately 45% empty space to the right; bottom rule at y88%. Compact reference 923×1704: text x7–92%, first block y14–38% across seven lines, second y45–66% across six lines; bottom rule at y92%. There are no reference cards, labels, or media. Preserve its open prose, left alignment, generous paragraph interval, and bottom rule. Content adaptation: use the required heading as the first large prose block, followed by the factual introduction and approach statement as the second group. Place founder attribution beside that statement. The brief explicitly requires a native workflow detail, so use part of the otherwise empty desktop right area for one existing validation pane, approximately 36% of content width and 4:3, without overlapping text. On compact place it after the prose and attribution. Its content is Validate order details, required fields Order reference and Email, and next step Update business system. Keep its Concept study caption adjacent. Retain the approved ivory section treatment and brand typeface; do not introduce a portrait or imitate credentials.",
+      "motion": {
+        "purpose": "explanation",
+        "trigger": "scroll_enter",
+        "behavior": "Reveal the workflow pane once using opacity and translateX from -10px over 550ms. Introduce its adjacent caption 80ms later. Keep the prose visible and stationary so the interface illustrates the already readable statement.",
+        "durationMs": 550,
+        "easing": "cubic-bezier(0.23, 1, 0.32, 1)",
+        "reducedMotion": "Present the complete prose and workflow pane immediately with no translation."
+      },
+      "componentNeeds": [
+        "workflow_detail_visual"
+      ],
+      "assetNeeds": [],
+      "transformation": {
+        "compact": "Use one prose column, then attribution, workflow pane, and caption. Preserve all copy and readable field names.",
+        "medium": "Keep open prose at a readable measure and put the pane below it if two columns would crowd the statement.",
+        "expanded": "Retain the reference's dominant left prose and generous spacing, using the required native pane in the right-side space."
+      }
+    },
+    {
+      "id": "process",
+      "layoutFamily": "about",
+      "layoutCases": [
+        "ollef-04-values"
+      ],
+      "referenceDirectionId": "ollef-04-values",
+      "purpose": "Explain the sequence from an initial problem to a supported launch.",
+      "userQuestion": "What happens after we agree to work together?",
+      "stage": "explain",
+      "dependencies": [
+        "about"
+      ],
+      "evidence": [
+        "The validated brief specifies Discover, Design, Build, and Launch with complete descriptions.",
+        "The existing implementation includes native operations and workflow excerpts."
+      ],
+      "copy": {
+        "eyebrow": "PROCESS",
+        "heading": "from idea to everyday use.",
+        "body": [
+          "01 Discover: Understand the business, users, and problem.",
+          "02 Design: Define the scope, workflows, and interface.",
+          "03 Build: Develop the software with regular reviews.",
+          "04 Launch: Deploy, hand over, and support the product.",
+          "Interface planning · Concept study",
+          "Workflow structure · Concept study"
+        ],
+        "callsToAction": []
+      },
+      "layout": "Reference map: desktop 1681×936, top rule at y13%; left label x3%, y20%; open prose units in the right column x50–80%, with starts near y20%, 47%, and 73%; small link x87–97%, y20%. Compact reference 923×1704: rule y14%, label y20%, full-width prose x6–94%, with starts near y26%, 47%, and 67%; final link near y88%. Preserve the asymmetric left label and right sequence, open prose rather than cards, and approximately one prose-unit height of separation. Required adaptations: use four ordered units instead of three because the delivery process has four steps; extend section height rather than compressing text. Put the heading in the left label column beneath PROCESS. Omit the reference's unrelated studio link. Below the sequence, retain two native explanatory excerpts in a 60:40 row, with approximately a 4% gap and no overlap. The wider excerpt contains Customer portal and the three existing task records; the narrower excerpt contains order validation fields and the next workflow step. Keep both concept captions adjacent. Compact stacks the excerpts and retains their source order. Do not add a timeline ornament, progress rail, or implied delivery dates.",
+      "motion": {
+        "purpose": "explanation",
+        "trigger": "scroll_enter",
+        "behavior": "Emphasize each step's index and title once by transitioning existing muted text to primary text over 500ms, with 70ms staggering capped at 210ms. Reveal each explanatory pane with opacity over 550ms as its own group enters. Keep body descriptions visible throughout.",
+        "durationMs": 550,
+        "easing": "cubic-bezier(0.23, 1, 0.32, 1)",
+        "reducedMotion": "Show all indices, titles, descriptions, and panes in their final states immediately."
+      },
+      "componentNeeds": [
+        "operations_detail_visual",
+        "workflow_detail_visual"
+      ],
+      "assetNeeds": [],
+      "transformation": {
+        "compact": "Place PROCESS and heading before the four-step ordered list. Stack the two native excerpts below the list. Preserve complete descriptions and captions.",
+        "medium": "Maintain the left introduction and right list when readable. Keep excerpts side by side only if native text fits without clipping.",
+        "expanded": "Use the reference's left-label/right-prose relationship, four spacious ordered units, then the required unequal native media pair."
+      }
+    },
+    {
+      "id": "faq",
+      "layoutFamily": "faq",
+      "layoutCases": [
+        "vistal-08-faq"
+      ],
+      "referenceDirectionId": "vistal-08-faq",
+      "purpose": "Resolve practical questions before an inquiry.",
+      "userQuestion": "What should I know before discussing a project?",
+      "stage": "de_risk",
+      "dependencies": [
+        "services",
+        "process"
+      ],
+      "evidence": [
+        "The validated brief requires five questions covering software types, getting started, estimates, existing applications, and maintenance.",
+        "The current page already implements native disclosures for these topics."
+      ],
+      "copy": {
+        "eyebrow": "FAQ",
+        "heading": "good questions.",
+        "body": [
+          "What kinds of software do you build?\nCustom web applications, business systems, internal tools, and integrations. The starting point is what your business needs the software to do.",
+          "How do projects get started?\nTell us about the problem, who will use the software, and what you want to achieve. We can then discuss requirements and a sensible next step.",
+          "How are costs and timelines estimated?\nEstimates depend on scope, complexity, integrations, and the information available. We clarify requirements and priorities before proposing costs and a timeline.",
+          "Can you improve an existing application?\nYes. We can review its current state, identify useful improvements, and discuss a suitable scope of work.",
+          "Do you offer ongoing maintenance?\nMaintenance and improvements are part of our services. We can discuss the support your application needs and agree on an approach."
+        ],
+        "callsToAction": []
+      },
+      "layout": "Reference map: desktop 1738×905, left label x4%, y19%; right heading x34–76%, y18–24%, one line; five disclosure rows x34–96%, y32–87%; first answer expanded beneath its question; right-aligned plus/minus controls; dotted dividers across the right column. Compact reference 849×1852: label x6%, y7%; heading x6–89%, y12–21%, two lines; rows x6–94%, y27–97%; wrapped question text remains left of the indicator. Preserve the approximately 30:70 desktop split, open rows, right indicators, divider treatment, and generous compact spacing. Use the shorter existing heading at the same relative scale without artificially stretching it. Keep five native details elements, initially showing the first answer, with independent open states and no enclosing cards. There are zero media boxes and no overlaps.",
+      "motion": {
+        "purpose": "state_change",
+        "trigger": "state_change",
+        "behavior": "On native disclosure toggle, transition the indicator over 180ms and introduce an opened answer with a 200ms opacity transition. Let document flow update immediately; do not animate height or delay semantic open state.",
+        "durationMs": 200,
+        "easing": "cubic-bezier(0.23, 1, 0.32, 1)",
+        "reducedMotion": "Update indicators and answers immediately while preserving native keyboard operation."
+      },
+      "componentNeeds": [],
+      "assetNeeds": [],
+      "transformation": {
+        "compact": "Stack label, heading, and all five disclosures. Reserve a separate indicator column and allow questions to wrap naturally.",
+        "medium": "Use a narrower left introduction column and wider disclosure column if both remain readable.",
+        "expanded": "Preserve the reference's left label, right heading, and five right-column disclosure rows."
+      }
+    },
+    {
+      "id": "contact",
+      "layoutFamily": "cta",
+      "layoutCases": [
+        "lexedge-13-cta"
+      ],
+      "referenceDirectionId": "lexedge-13-cta",
+      "purpose": "Provide the primary project inquiry destination with an honest delivery state.",
+      "userQuestion": "How do I describe my project, and can this form send it?",
+      "stage": "act",
+      "dependencies": [
+        "faq"
+      ],
+      "evidence": [
+        "The validated brief requires name, email, and project description fields.",
+        "The inquiry submission service is unconfigured, and sending must remain disabled."
+      ],
+      "copy": {
+        "eyebrow": "START A PROJECT",
+        "heading": "let’s build what’s next.",
+        "body": [
+          "Tell us what you’re working on and where you need help.",
+          "Name",
+          "Email",
+          "Project description",
+          "Inquiries are currently unavailable. This form cannot send messages."
+        ],
+        "callsToAction": [
+          {
+            "label": "Send inquiry",
+            "target": "#inquiry_form"
+          }
+        ]
+      },
+      "layout": "Reference map: desktop 1554×1012, one rounded inset panel x2–98%, y3–97%; centered label around y37%; two-line heading x16–84%, y41–53%; centered action x43–58%, y58–65%. Compact reference 1100×1428: panel x3–97%, y2–98%; label y29%; heading box x27–75%, y34–58%, four lines; action x32–68%, y63–70%. Preserve the single inset panel, large internal negative space, centered hierarchy, and restrained rounding. Use the existing dark surface rather than introducing the reference's decorative gradient. Required content adaptation: replace the lone action area with the existing native inquiry form, centered at a readable maximum width beneath the support block. Extend panel height to accommodate three labeled required fields and the availability message. Use Name, Email, and Project description labels; placeholders are Your name, you@company.com, and What are you trying to build or improve? Keep Send inquiry visibly disabled and associate the availability message with the form and button. The availability disclosure is required functional information, not a placeholder. There are zero media boxes, no split promotional cards, and no invented contact details.",
+      "motion": {
+        "purpose": "feedback",
+        "trigger": "state_change",
+        "behavior": "Keep the form and availability message visible. Apply 160ms border and background feedback to editable fields on focus and validation state changes. Disabled Send inquiry must not animate as an available action. Never introduce a success state without confirmed server acceptance.",
+        "durationMs": 160,
+        "easing": "cubic-bezier(0.23, 1, 0.32, 1)",
+        "reducedMotion": "Apply focus and validation styles immediately with the same information and controls."
+      },
+      "componentNeeds": [],
+      "assetNeeds": [],
+      "transformation": {
+        "compact": "Keep the centered introduction followed by a full-width single-column form. Allow the shorter heading to wrap naturally. Place the availability message next to the disabled action.",
+        "medium": "Retain the centered panel and readable form width, increasing outer space without adding columns.",
+        "expanded": "Use one spacious inset panel with centered copy and form; preserve reference proportions where the required form permits and grow height for content."
+      }
+    },
+    {
+      "id": "footer",
+      "layoutFamily": "footer",
+      "layoutCases": [
+        "vistal-10-footer"
+      ],
+      "referenceDirectionId": "vistal-10-footer",
+      "purpose": "Close the page with identity and useful return paths.",
+      "userQuestion": "Where can I return to the information I need?",
+      "stage": "continue",
+      "dependencies": [
+        "contact"
+      ],
+      "evidence": [
+        "The existing identity includes the Grey Labs wordmark and three-bar mark.",
+        "The validated brief requires compact navigation, Back to top, and current-year copyright."
+      ],
+      "copy": {
+        "heading": "grey labs",
+        "body": [
+          "Independent software development.",
+          "Built for the way you work.",
+          "© {current_year} Grey Labs"
+        ],
+        "callsToAction": [
+          {
+            "label": "Work",
+            "target": "#work"
+          },
+          {
+            "label": "Services",
+            "target": "#services"
+          },
+          {
+            "label": "Process",
+            "target": "#process"
+          },
+          {
+            "label": "About",
+            "target": "#about"
+          },
+          {
+            "label": "Start a project",
+            "target": "#contact"
+          },
+          {
+            "label": "Back to top",
+            "target": "#hero"
+          }
+        ]
+      },
+      "layout": "Reference map: desktop 1681×936, identity and description x4–36%, y12–27%; three link columns beginning near x54%, 69%, and 86%, y14–38%; oversized wordmark x2–98%, y49–90%. Compact reference 898×1817: identity and description x5–95%, y7–18%; two link columns y26–46%; remaining links below left y54–72%; oversized wordmark x3–97%, y83–95%. Preserve the upper identity/navigation area and large lower wordmark. Use the approved ivory accent for the wordmark instead of yellow. Distribute only the six real destinations across compact link groups; reduce excessive vertical space rather than inventing links to match the reference's count. Place current-year copyright in the closing utility line. Use one accessible identity heading and mark any duplicate oversized wordmark decorative. There are zero media boxes and no added social, newsletter, careers, or legal destinations.",
+      "motion": {
+        "purpose": "feedback",
+        "trigger": "hover",
+        "behavior": "Provide 160ms link color or underline feedback and immediate visible keyboard focus. Back to top follows native anchor behavior, using smooth scrolling only when motion preferences permit.",
+        "durationMs": 160,
+        "easing": "cubic-bezier(0.23, 1, 0.32, 1)",
+        "reducedMotion": "Use immediate link feedback and instant anchor scrolling."
+      },
+      "componentNeeds": [],
+      "assetNeeds": [],
+      "transformation": {
+        "compact": "Stack identity and tagline above two navigation columns, then utility links and the oversized wordmark. Keep every link at least 44px tall.",
+        "medium": "Use identity left and two compact link groups right, followed by the full-width wordmark.",
+        "expanded": "Preserve the upper identity/link composition and lower oversized wordmark with existing brand colors."
+      }
+    }
+  ],
+  "responsive": [
+    "Use content-driven transitions near the existing compact and medium breakpoints. Verify at 320, 390, 768, 1024, and 1440px and at 200% zoom.",
+    "Compact layouts reduce simultaneous columns while retaining every project, description, disclosure, field, proof label, and action.",
+    "Keep DOM source order consistent with reading and keyboard order. Do not use CSS reordering to move actions away from their explanations.",
+    "Native concept interfaces reflow into readable groups. Do not scale down screenshots, crop required controls, or replace interfaces with SVG illustrations.",
+    "Preserve concept identification adjacent to each demonstration at every width.",
+    "Use existing brand colors and fonts. Apply the validated light-control border token #6B6961 where functional borders require it.",
+    "The composition measurements are planning targets derived from the supplied images. Content-driven deviations are stated per section and require visual checking in a later implementation phase."
+  ],
+  "interactions": [
+    "Start a project consistently targets #contact; View our work targets #work.",
+    "Operations filters update representative local project state without network requests. Workflow step buttons update the adjacent configuration panel and expose selection programmatically.",
+    "Previous project and Next project change the selected concept without autoplay, lost focus, or hidden keyboard destinations. Both projects remain available without JavaScript.",
+    "Project details and FAQ answers use native disclosures with clear accessible names and independently operable states.",
+    "The inquiry form has required name, email, and project description fields, appropriate autocomplete, visible labels, and associated error text. An empty endpoint disables sending. Never transmit form values in the page URL or report unconfirmed success.",
+    "Use existing ivory accent treatments for primary actions, selected controls, visible focus, and recurring native interface surfaces. Hover movement is supplemental and never carries required information.",
+    "Reveals default to visible in CSS. Prepare hidden states only for individual groups below the viewport. Use IntersectionObserver with threshold 0 and a positive bottom rootMargin near 80px, then unobserve immediately after activation.",
+    "Reveals run once and remain finished through reverse scrolling, resize, and rerenders. Skip or finish animations during rapid scrolling so no visited content remains invisible.",
+    "Reduced-motion changes and cleanup cancel only owned animations, disconnect owned observers, and restore final visibility. Do not cancel unrelated document animations, transform sticky ancestors, nest reveal transforms, or alter native page scrolling."
+  ],
+  "acceptanceCriteria": [
+    "This phase returns a blueprint only. It edits no website files or approved artifacts, installs no dependencies, generates no assets, and starts no server.",
+    "The page contains exactly seven substantive sections plus footer, with one primary inquiry intent and no fabricated proof.",
+    "Every section uses the recorded exact current-deck reference ID. Later implementation compares desktop and compact geometry against those same images and documents the content adaptations listed here.",
+    "The reference mappings in this blueprint differ from the older approved mappings in the project artifacts. Do not claim the existing implementation already matches this new blueprint or silently overwrite historical verification.",
+    "Preserve the dependency-free HTML, CSS, and JavaScript architecture and reuse the existing native concept components. The component IDs identify substantial existing interfaces, not new library purchases.",
+    "Operations workspace and Connected workflows remain visibly identified as Concept study. Representative records and configurations never imply commissioned work, live integrations, customers, or measured results.",
+    "Verify all navigation, project selection, filters, workflow steps, disclosures, and form states by keyboard and pointer. Maintain visible focus, readable contrast, labeled fields, and minimum 44px targets.",
+    "Verify an actual hero entrance, work reveal, distinct About reveal, process emphasis, and direct interaction feedback in the browser. A still screenshot cannot establish motion execution.",
+    "Rapidly scroll down and up twice, reload at a middle position, resize, and toggle reduced motion during playback. Record browser evidence that every visited section stays visible and reveals do not replay.",
+    "Verify content and essential navigation without JavaScript and verify compact interfaces without horizontal page overflow.",
+    "Keep inquiry sending disabled while the endpoint is empty. Verify that no submission request, URL transmission, or false success occurs.",
+    "Treat prior browser checks as historical evidence only. This Page phase performs no new runtime verification.",
+    "The eventual publishing verification note must identify both concept studies, representative demonstration values, the actual inquiry-service configuration, and any remaining hosted-preview or real-device checks."
+  ]
+}

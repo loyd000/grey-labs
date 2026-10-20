@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "verdict": "pass",
+  "summary": "No actionable visual discrepancies remain in the supplied desktop and mobile captures. Both DOM audits report no target-size violations. Motion timing and interaction behavior cannot be established from still screenshots.",
+  "findings": []
+}

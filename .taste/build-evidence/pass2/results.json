@@ -1,0 +1,241 @@
+{
+  "errors": [],
+  "hero": [
+    {
+      "state": "running",
+      "duration": 600,
+      "frames": [
+        {
+          "offset": null,
+          "easing": "linear",
+          "composite": "auto",
+          "transform": "translateY(14px)",
+          "computedOffset": 0
+        },
+        {
+          "offset": null,
+          "easing": "linear",
+          "composite": "auto",
+          "transform": "none",
+          "computedOffset": 1
+        }
+      ]
+    }
+  ],
+  "fonts": {
+    "faces": [
+      {
+        "family": "Instrument Sans",
+        "status": "loaded",
+        "weight": "400 700"
+      },
+      {
+        "family": "Azeret Mono",
+        "status": "loaded",
+        "weight": "100 900"
+      }
+    ],
+    "sans": [
+      true,
+      true,
+      true,
+      true
+    ],
+    "mono": [
+      true,
+      true
+    ]
+  },
+  "layouts": [
+    {
+      "width": 320,
+      "scrollWidth": 320,
+      "smallTargets": []
+    },
+    {
+      "width": 390,
+      "scrollWidth": 390,
+      "smallTargets": []
+    },
+    {
+      "width": 768,
+      "scrollWidth": 768,
+      "smallTargets": []
+    },
+    {
+      "width": 1024,
+      "scrollWidth": 1024,
+      "smallTargets": []
+    },
+    {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "smallTargets": []
+    }
+  ],
+  "filter": [
+    "02Order syncReview"
+  ],
+  "workflow": "ACTION\n\nNotify the team\n\nNotification channel\n\nTeam updates",
+  "detailOpen": true,
+  "faqOpen": true,
+  "workMotion": [
+    {
+      "state": "running",
+      "frames": [
+        {
+          "offset": null,
+          "easing": "linear",
+          "composite": "auto",
+          "transform": "translateY(20px)",
+          "opacity": "0",
+          "computedOffset": 0
+        },
+        {
+          "offset": null,
+          "easing": "linear",
+          "composite": "auto",
+          "transform": "none",
+          "opacity": "1",
+          "computedOffset": 1
+        }
+      ]
+    }
+  ],
+  "aboutMotion": [],
+  "stability": [
+    {
+      "type": "rise",
+      "played": "true",
+      "opacity": "1",
+      "animations": 0
+    },
+    {
+      "type": "opacity",
+      "played": "true",
+      "opacity": "1",
+      "animations": 0
+    },
+    {
+      "type": "rise",
+      "played": "true",
+      "opacity": "1",
+      "animations": 0
+    },
+    {
+      "type": "opacity",
+      "played": "true",
+      "opacity": "1",
+      "animations": 0
+    },
+    {
+      "type": "slide",
+      "played": "true",
+      "opacity": "1",
+      "animations": 0
+    },
+    {
+      "type": "opacity",
+      "played": "true",
+      "opacity": "1",
+      "animations": 0
+    },
+    {
+      "type": "opacity",
+      "played": "true",
+      "opacity": "1",
+      "animations": 0
+    },
+    {
+      "type": "opacity",
+      "played": "true",
+      "opacity": "1",
+      "animations": 0
+    },
+    {
+      "type": "emphasis",
+      "played": "true",
+      "opacity": "1",
+      "animations": 0
+    },
+    {
+      "type": "emphasis",
+      "played": "true",
+      "opacity": "1",
+      "animations": 0
+    },
+    {
+      "type": "emphasis",
+      "played": "true",
+      "opacity": "1",
+      "animations": 0
+    },
+    {
+      "type": "emphasis",
+      "played": "true",
+      "opacity": "1",
+      "animations": 0
+    }
+  ],
+  "restored": {
+    "scrollY": 3701,
+    "visible": true
+  },
+  "menuOpen": true,
+  "menuEscape": true,
+  "reduced": {
+    "hero": 0,
+    "visible": true,
+    "active": 0
+  },
+  "toggled": {
+    "hero": 0,
+    "hidden": 0
+  },
+  "formStates": [
+    {
+      "mode": "unconfigured",
+      "before": true,
+      "sending": "Inquiries are currently unavailable. This form cannot send messages.",
+      "calls": 0,
+      "final": "Inquiries are currently unavailable. This form cannot send messages.",
+      "preserved": "Test inquiry"
+    },
+    {
+      "mode": "success",
+      "before": false,
+      "sending": "Sending inquiry…",
+      "calls": 1,
+      "final": "Your inquiry has been sent. Thank you for getting in touch.",
+      "preserved": ""
+    },
+    {
+      "mode": "rejected",
+      "before": false,
+      "sending": "Sending inquiry…",
+      "calls": 1,
+      "final": "We could not confirm delivery. Please try again later.",
+      "preserved": "Test inquiry"
+    },
+    {
+      "mode": "malformed",
+      "before": false,
+      "sending": "Sending inquiry…",
+      "calls": 1,
+      "final": "We could not confirm delivery. Please try again later.",
+      "preserved": "Test inquiry"
+    },
+    {
+      "mode": "network",
+      "before": false,
+      "sending": "Sending inquiry…",
+      "calls": 1,
+      "final": "We could not confirm delivery. Please try again later.",
+      "preserved": "Test inquiry"
+    }
+  ],
+  "zoomEquivalent": {
+    "width": 720,
+    "overflow": false
+  }
+}

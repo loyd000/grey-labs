@@ -1,0 +1,60 @@
+{
+  "originalRequest": "continue",
+  "subject": "Grey Labs, an independent custom software development company founded by Lloyd, at grey-labs.dev.",
+  "pageType": "Existing software studio landing page and portfolio.",
+  "scope": "Continue the established design using the completed static implementation and approved design direction. Preserve existing work and refine only demonstrated visual, responsive, interaction, or accessibility issues in subsequent phases.",
+  "primaryGoal": "Help prospective clients understand the services, explore concrete software concepts, and start a project through a clear, polished landing page.",
+  "audience": "Business owners and teams seeking custom web applications, internal systems, integrations, automation, or improvements to existing software.",
+  "offer": "Custom software built around each business’s workflows. Built for the way you work.",
+  "primaryAction": "Start a project, supported by View our work. Preserve the inquiry form but keep sending disabled and clearly disclosed until a submission service is configured.",
+  "creativeControl": "Continue autonomously within the approved identity and reference compositions. Favor focused refinements supported by inspection rather than a new visual direction, new content sections, or a replacement application.",
+  "requiredContent": [
+    "Navigation: existing Grey Labs wordmark and three-bar mark, Work, Services, Process, About, Start a project, skip link, and accessible compact menu.",
+    "Hero: “custom software. built around your business.”, concise supporting copy, View our work and Start a project actions, and the broad native Operations workspace concept. Retain the xodexdesign-01-hero composition.",
+    "Selected work: Operations workspace and Connected workflows, both visibly identified as Concept study, with service categories, brief and concept descriptions, interactive native demonstrations, project navigation, and expandable details. Retain the saleunion-04-services composition.",
+    "Services: custom web applications; business systems and internal tools; integrations and automation; maintenance and improvements, with the existing benefit-focused descriptions and editorial rows. Retain the stodio-05-services composition.",
+    "About: factual introduction to Grey Labs and founder Lloyd, the thoughtful approach statement, supporting explanation, and native workflow detail. Retain the mitchy-03-about composition.",
+    "Process: Discover, Design, Build, and Launch with complete descriptions, ordered indices, and native operations and workflow excerpts. Retain the avoora-02-about composition.",
+    "Frequently asked questions: five native disclosures covering software types, getting started, estimates, existing-application improvements, and maintenance. Retain the saleunion-11-faq composition.",
+    "Contact: “let’s build what’s next.”, supporting copy, labeled required name, email, and project description fields, Send inquiry, and an honest unavailable-sending disclosure. Retain the lexedge-12-contact composition.",
+    "Footer: existing identity, tagline, compact navigation, Back to top, and current-year copyright. Retain the ariyana-studio-12-footer composition."
+  ],
+  "constraints": [
+    "This turn is briefing only: do not edit files, implement changes, generate assets, install dependencies, or start a preview server.",
+    "Preserve the existing dependency-free HTML, CSS, and JavaScript architecture and completed implementation.",
+    "Keep approved design artifacts unchanged during implementation phases.",
+    "Preserve the selected desktop and compact reference compositions and their documented content-specific adaptations. Services has no supplied compact reference; retain its previously derived responsive treatment.",
+    "Retain accessible contrast, keyboard operation, visible focus, labeled fields, readable text, and minimum 44px interactive targets.",
+    "Retain visible hero motion, distinct work and studio reveals, process emphasis, and interaction feedback. Respect reduced motion and keep content visible without scripts.",
+    "Reveals must run once without hiding already-visible content, replaying on reverse scrolling, or leaving invisible content after rapid scrolling, resize, or restored positions.",
+    "Do not invent clients, testimonials, credentials, affiliations, public project URLs, or measured outcomes.",
+    "Preserve concise concept identification and representative local-state demonstrations. Do not present them as delivered client projects or live integrations.",
+    "Do not substitute generated screenshots or dashboard SVGs for the approved native concept components.",
+    "Avoid scroll hijacking, perpetual motion, neon effects, decorative gradients, glass panels, unrelated photography, and repetitive decorative card grids.",
+    "Keep inquiry sending disabled while the endpoint is empty. Never report success without confirmed acceptance or transmit form values through the page URL."
+  ],
+  "brandInputs": [
+    "Grey Labs; grey-labs.dev; founded by Lloyd. Source: established user brief.",
+    "Tagline: Built for the way you work. Source: established user brief.",
+    "Charcoal #131313, warm ivory #EAE7DE, muted text #A5A49F, dividers #363633, dark surface #0F0F0F, and raised surface #292929. Source: current styles.css.",
+    "Instrument Sans for display, body, navigation, and controls; Azeret Mono for compact labels and metadata. Licensed font files are local. Source: current styles.css and approved asset manifest.",
+    "Lowercase oversized sans-serif headlines, tight tracking, editorial alignment, generous space, ivory controls, restrained rounding, and an ivory About section. Source: approved brand direction and current implementation.",
+    "Existing lowercase wordmark, three-bar CSS identity mark, and assets/favicon.svg. Source: current project.",
+    "Seven substantive sections plus footer, native software concept views, local demonstration interactions, and reduced-motion-aware animation. Source: inspected index.html and script.js."
+  ],
+  "assumptions": [
+    "Continue refers to the existing Grey Labs design and completed implementation, not a new website.",
+    "Preserve seven substantive sections rather than add an eighth that would introduce filler.",
+    "Reuse completed work and recorded browser evidence; distinguish prior verification from any future checks.",
+    "Retain Operations workspace and Connected workflows as finished, visibly labeled concept studies. Their project names, tasks, statuses, workflow steps, required fields, destination, and notification channel are representative demonstration content.",
+    "Real project folders are optional later replacements for the concepts, not prerequisites for completing the current page.",
+    "The original instruction to defer coding applied to briefing. The completed Build remains valid; this turn makes no implementation changes.",
+    "Subsequent publishing verification should identify concept content and representative records and state the actual inquiry-service configuration."
+  ],
+  "unresolved": [
+    "The inquiry submission service remains unconfigured; live delivery cannot yet be verified.",
+    "Real project materials and public URLs may be supplied later to replace concept studies.",
+    "Real-device checks and verification through the eventual hosted preview remain non-blocking follow-up work."
+  ],
+  "explicitAnswers": []
+}

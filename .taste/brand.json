@@ -1,0 +1,336 @@
+{
+  "version": 1,
+  "foundation": {
+    "strategy": "preserve",
+    "existingAssets": [
+      "index.html: lowercase Grey Labs wordmark, three-bar CSS mark and native software concept views.",
+      "styles.css: established palette, Instrument Sans, Azeret Mono, editorial spacing and functional surfaces.",
+      "script.js: local demonstration interactions, one-time reveals and reduced-motion handling.",
+      "assets/favicon.svg: existing three-bar identity.",
+      "assets/fonts/instrumentsans/InstrumentSans-Variable.ttf and OFL.txt.",
+      "assets/fonts/azeretmono/AzeretMono-Variable.ttf and OFL.txt.",
+      "assets/operations.svg and assets/integrations.svg: historical files unused by the current page.",
+      "README.md and .taste/build-evidence: documented adaptations and prior browser verification.",
+      "All 27 current reference images previously inspected with image-viewing tools."
+    ],
+    "assetActions": [
+      {
+        "asset": "Grey Labs name, tagline and lowercase wordmark",
+        "action": "protect",
+        "reason": "Explicit identity requirements remain unchanged."
+      },
+      {
+        "asset": "Three-bar CSS mark and assets/favicon.svg",
+        "action": "preserve",
+        "reason": "Verified identity assets require no replacement."
+      },
+      {
+        "asset": "Charcoal, ivory and supporting palette",
+        "action": "protect",
+        "reason": "Preserve established colors while assigning accessible functional roles."
+      },
+      {
+        "asset": "Light control-border role",
+        "action": "evolve",
+        "reason": "Use #6B6961 for essential boundaries across light surfaces. It provides 4.45:1 contrast on #EAE7DE, 5.41:1 on #FFFDF8 and 4.61:1 on #EEEBE2. The existing #8A877E remains documented as an implementation color, not the universal light control-border token."
+      },
+      {
+        "asset": "Local Instrument Sans and Azeret Mono families",
+        "action": "protect",
+        "reason": "Established brand typefaces already have local files and licenses."
+      },
+      {
+        "asset": "Native Operations workspace and Connected workflows views",
+        "action": "preserve",
+        "reason": "They fulfill the approved concept presentation with semantic content and local interactions."
+      },
+      {
+        "asset": "Existing editorial rows, media frames, panels and disclosures",
+        "action": "preserve",
+        "reason": "The continuation brief requests focused refinement of completed work."
+      },
+      {
+        "asset": "Existing motion and interaction logic",
+        "action": "preserve",
+        "reason": "Retain completed behavior and repair only demonstrated defects."
+      },
+      {
+        "asset": "assets/operations.svg and assets/integrations.svg",
+        "action": "preserve",
+        "reason": "Keep historical files without restoring them as interface substitutes."
+      }
+    ],
+    "lockedDecisions": [
+      "Grey Labs; grey-labs.dev; founded by Lloyd; Built for the way you work.",
+      "Charcoal #131313, warm ivory #EAE7DE, muted text #A5A49F, dividers #363633, dark surface #0F0F0F and raised surface #292929.",
+      "Instrument Sans as the primary family; Azeret Mono for concise labels, indices and metadata.",
+      "Oversized lowercase sans-serif headlines, compact leading, tight tracking and normal prose capitalization.",
+      "Existing wordmark and three-bar mark geometry.",
+      "Dark editorial minimalism, strong alignment, generous space, restrained rounding and deliberate ivory surfaces.",
+      "Ivory primary actions and selected states with charcoal text; charcoal equivalents on ivory.",
+      "Preserve the completed composition direction and documented responsive adaptations in the validated brief.",
+      "Keep native concepts visibly identified without client, affiliation, live-integration or outcome claims.",
+      "Retain visible motion, reduced-motion support and readable script-free states.",
+      "Keep inquiry sending disabled while its endpoint is empty.",
+      "No website edits, acquisition, installation or implementation in Brand."
+    ],
+    "assumptions": [
+      "The explicit continuation brief takes precedence over randomized references where compositions conflict.",
+      "The inspected references reinforce expressive type, asymmetric whitespace, broad media and deliberate grouping. Their identity-specific colors, serif faces, portraits and claims are not new requirements.",
+      "Light roles support existing ivory panels and native interfaces, not a theme switch.",
+      "The existing light border #8A877E fails the required 3:1 contrast against ivory canvas. Preserve core identity colors and adapt only the functional border role to #6B6961.",
+      "The corrected border passes 3:1 against all three light surfaces; no project files were edited.",
+      "Prior browser evidence remains prior verification. Brand makes no new runtime or recognition-validation claim.",
+      "Real project materials are optional later replacements for the finished concept studies."
+    ]
+  },
+  "creativeDirection": {
+    "summary": "Preserve Grey Labs’ dark editorial identity through monumental lowercase statements, precise supporting information and generously framed software concepts.",
+    "traits": [
+      {
+        "quality": "Large, tightly composed sans-serif statements",
+        "boundary": "not serif substitution, novelty lettering, glow or compressed mobile text"
+      },
+      {
+        "quality": "Technical clarity through readable native software views",
+        "boundary": "not terminal styling, ornamental schematics or simulated client proof"
+      },
+      {
+        "quality": "Spacious alignment with deliberate surface contrast",
+        "boundary": "not arbitrary empty screens or boxes around ordinary prose"
+      },
+      {
+        "quality": "Personal, practical communication",
+        "boundary": "not large-agency posturing or unsupported promises"
+      }
+    ],
+    "productiveTension": "Expressive headline scale paired with precise, practical software detail.",
+    "signatureDevice": {
+      "description": "The existing contrast between monumental lowercase statements, quieter offset information and broad straight-on software frames.",
+      "status": "existing",
+      "invariants": [
+        "Keep Instrument Sans display type dominant, lowercase and tightly tracked.",
+        "Align supporting information and software frames to the shared grid.",
+        "Keep workflows readable and concept captions adjacent.",
+        "Preserve compact hierarchy through deliberate wrapping and native reflow.",
+        "Use scale contrast selectively without repeating identical compositions."
+      ]
+    },
+    "restraint": "Use typography, whitespace, meaningful software content and ivory surfaces for expression. Add no decorative motif.",
+    "avoid": [
+      "Neon, glow, glass, decorative gradients and perpetual movement.",
+      "Unrelated office, lifestyle or team photography.",
+      "Invented portraits, testimonials, client logos or metrics.",
+      "Ornamental grids, edge rails and badge collections.",
+      "Replacing established compositions solely to follow a new reference."
+    ]
+  },
+  "colorPalette": [
+    {
+      "name": "Light Canvas",
+      "value": "#EAE7DE",
+      "usage": "Dominant. canvas token in the light theme."
+    },
+    {
+      "name": "Light Surface",
+      "value": "#FFFDF8",
+      "usage": "Dominant. surface token in the light theme."
+    },
+    {
+      "name": "Light Surface alt",
+      "value": "#EEEBE2",
+      "usage": "Supporting. surface alt token in the light theme."
+    },
+    {
+      "name": "Light Text",
+      "value": "#131313",
+      "usage": "Semantic. text token in the light theme."
+    },
+    {
+      "name": "Light Text muted",
+      "value": "#4F4D46",
+      "usage": "Semantic. text muted token in the light theme."
+    },
+    {
+      "name": "Light Divider",
+      "value": "#D1CEC4",
+      "usage": "Semantic. divider token in the light theme."
+    },
+    {
+      "name": "Light Control border",
+      "value": "#6B6961",
+      "usage": "Semantic. control border token in the light theme."
+    },
+    {
+      "name": "Light Accent",
+      "value": "#131313",
+      "usage": "Sparse accent. accent token in the light theme."
+    },
+    {
+      "name": "Light Accent hover",
+      "value": "#292929",
+      "usage": "Semantic. accent hover token in the light theme."
+    },
+    {
+      "name": "Light On accent",
+      "value": "#EAE7DE",
+      "usage": "Semantic. on accent token in the light theme."
+    },
+    {
+      "name": "Light Accent text",
+      "value": "#131313",
+      "usage": "Sparse accent. accent text token in the light theme."
+    },
+    {
+      "name": "Light Focus ring",
+      "value": "#131313",
+      "usage": "Semantic. focus ring token in the light theme."
+    },
+    {
+      "name": "Dark Canvas",
+      "value": "#131313",
+      "usage": "Dominant. canvas token in the dark theme."
+    },
+    {
+      "name": "Dark Surface",
+      "value": "#0F0F0F",
+      "usage": "Dominant. surface token in the dark theme."
+    },
+    {
+      "name": "Dark Surface alt",
+      "value": "#292929",
+      "usage": "Supporting. surface alt token in the dark theme."
+    },
+    {
+      "name": "Dark Text",
+      "value": "#EAE7DE",
+      "usage": "Semantic. text token in the dark theme."
+    },
+    {
+      "name": "Dark Text muted",
+      "value": "#A5A49F",
+      "usage": "Semantic. text muted token in the dark theme."
+    },
+    {
+      "name": "Dark Divider",
+      "value": "#363633",
+      "usage": "Semantic. divider token in the dark theme."
+    },
+    {
+      "name": "Dark Control border",
+      "value": "#868686",
+      "usage": "Semantic. control border token in the dark theme."
+    },
+    {
+      "name": "Dark Accent",
+      "value": "#EAE7DE",
+      "usage": "Sparse accent. accent token in the dark theme."
+    },
+    {
+      "name": "Dark Accent hover",
+      "value": "#FFFDF8",
+      "usage": "Semantic. accent hover token in the dark theme."
+    },
+    {
+      "name": "Dark On accent",
+      "value": "#131313",
+      "usage": "Semantic. on accent token in the dark theme."
+    },
+    {
+      "name": "Dark Accent text",
+      "value": "#EAE7DE",
+      "usage": "Sparse accent. accent text token in the dark theme."
+    },
+    {
+      "name": "Dark Focus ring",
+      "value": "#EAE7DE",
+      "usage": "Semantic. focus ring token in the dark theme."
+    }
+  ],
+  "typefaces": [
+    {
+      "family": "Instrument Sans",
+      "source": "https://github.com/google/fonts/tree/main/ofl/instrumentsans",
+      "roles": [
+        "Preserve the acquired primary family for display, body, navigation, controls and wordmark text.",
+        "Display: approximately 88–106px expanded and 40–64px compact, weight 600–700, leading 1.02–1.04 and tracking near -0.06em. Preserve intentional line breaks.",
+        "Editorial headings: approximately 56–100px expanded and 44–70px compact according to existing composition.",
+        "Body: 16–18px with 1.5–1.7 leading. Controls: 14–16px; form entry at least 16px.",
+        "Use the upright variable file at default width without synthesized italics.",
+        "Build must await document.fonts.ready, inspect matching loaded FontFace entries and check required weights."
+      ],
+      "weights": [
+        400,
+        500,
+        600,
+        700
+      ]
+    },
+    {
+      "family": "Azeret Mono",
+      "source": "https://github.com/google/fonts/tree/main/ofl/azeretmono",
+      "roles": [
+        "Preserve the acquired secondary family for concise labels, indices and metadata.",
+        "Use approximately 11–12px, 1.4–1.6 leading and modest positive tracking.",
+        "Keep prose and display headlines in Instrument Sans; verify actual local font loading in Build."
+      ],
+      "weights": [
+        400,
+        500
+      ]
+    }
+  ],
+  "interfaceDirection": "Preserve the 4px spacing base with 8, 12, 16, 24, 32, 48, 64, 96 and 128px intervals. Keep content width near 1440px, expanded gutters of 48–64px, compact gutters of 20–24px and prose widths of 45–65 characters. Retain approximately 96–128px expanded and 64–80px compact vertical spacing, adjusted for content. Preserve the dark canvas and established ivory interludes. Use raised surfaces for functional grouping, not ordinary prose. Retain open editorial rows, broad native media frames, overlapping project captions and distinct disclosure surfaces. Controls use 2–4px radii, media 6–8px and grouped panels 10–12px. Use 24–32px panel padding, reducing to 18–24px where needed. Keep existing functional rules without ornamental grids or ambient shadows. Ivory serves primary actions, focus, selected states and recurring media or panel surfaces; use charcoal equivalents on ivory. Essential light control boundaries use #6B6961, which exceeds 3:1 against every light surface. Decorative dividers may remain quieter. Preserve hover, focus, pressed, selected, expanded, disabled, pending and error states. Targets remain at least 44 by 44px, with state cues beyond color. Retain existing arrows and plus/minus cues. Native views grow or reflow rather than crop their content.",
+  "imageDirection": {
+    "summary": "Preserve meaningful native software concepts as the primary visual material. Reference photographs and decorative artwork do not establish new asset requirements.",
+    "subjects": [
+      "Operations workspace overview and task excerpts.",
+      "Connected workflows editor and validation excerpts.",
+      "Authentic matching project captures when real materials are later supplied."
+    ],
+    "treatment": "Keep software views straight-on, legible and minimally framed. Overview and detail variants share records and visual language. Keep Concept study identification visible and adjacent. Controls operate locally without implying live integrations. Preserve media prominence and relationships to copy. Future real captures retain truthful colors, stable proportions, meaningful crops and privacy-safe content.",
+    "avoid": [
+      "Generated or rasterized screenshots replacing native components.",
+      "Old dashboard SVGs restored as substitutes.",
+      "Stock teams, invented founder portraits or unrelated lifestyle imagery.",
+      "Abstract shields, line grids, geometric filler and decorative diagrams.",
+      "Perspective distortion or overlays obscuring software.",
+      "Sensitive records and unsupported outcome annotations."
+    ]
+  },
+  "motionDirection": {
+    "summary": "Preserve the native motion system for hierarchy, explanation and feedback within existing geometry. Later implementation changes require fresh browser evidence.",
+    "principles": [
+      "For spatial continuity on initial load, introduce headline groups, supporting copy, actions and software media with 14–20px vertical translation over 550–800ms, decisive ease-out cubic-bezier(0.22,1,0.36,1), 60–90ms offsets and at most 240ms staggering; after paint use transform only without hiding content late; reduced motion and restored middle-position loads show final states immediately.",
+      "For explanation when individual work views approach entry, introduce the native frame with opacity and up to 20px vertical translation over 600–750ms, followed by its caption after 60–80ms, using smooth ease-out; keep the scroller ancestor untransformed; reduced motion shows both immediately.",
+      "For explanation when the studio statement and supporting view approach entry, slide the statement horizontally approximately 10px with opacity over 450–600ms and introduce the supporting group with opacity after 60–100ms, using restrained ease-out; reduced motion presents final states.",
+      "For process progression on first approach, emphasize indices and titles from accessible muted text to primary text over 450–550ms with gentle ease-out and 60–80ms staggering capped at 240ms; descriptions stay readable, completed emphasis remains permanent and reduced motion uses final emphasis immediately.",
+      "For intent feedback on hover-capable fine pointers and keyboard focus, update control colors and borders over 120–200ms with crisp ease-out and arrow translation no greater than 3px; retain visible focus; reduced motion removes translation and makes state feedback immediate.",
+      "For disclosure explanation on pointer or keyboard activation, update the indicator and answer opacity over 160–220ms with controlled ease-out while native flow handles expansion without animated height; reduced motion updates immediately and information never depends on hover.",
+      "For local demonstration changes on activation, update filters and workflow configuration immediately with optional opacity feedback under 200ms, and move project navigation over approximately 220ms with short ease-out; reduced motion jumps directly without auto-advance or external requests.",
+      "For scroll stability during entry, rapid scrolling, resize, restored positions and rerenders, prepare only leaf groups below the viewport, observe once at threshold 0 with positive bottom rootMargin near 80–96px, unobserve immediately and retain final states after their assigned 450–800ms ease-out; CSS defaults visible, skipped groups finish immediately, and reduced-motion changes or cleanup cancel only owned animations and restore visibility."
+    ],
+    "avoid": [
+      "transition: all.",
+      "Scale-from-zero entrances, bouncing, perpetual floating and scroll hijacking.",
+      "Global opacity-zero classes or hiding already-visible content.",
+      "Resetting reveals on exit, reverse scrolling, resize or rerender.",
+      "Nested reveal transforms or transformed fixed-control ancestors.",
+      "Large blur, filter or clip-path animations.",
+      "Invisible backlogs or interaction gated by animation.",
+      "Canceling unrelated document animations.",
+      "Inferring motion verification from still screenshots."
+    ]
+  },
+  "voice": {
+    "summary": "Personal, capable and direct. Preserve the tagline and lowercase display statements. Use normal capitalization for prose and controls, concrete verbs and practical software descriptions. Keep concept identification concise and visible. Distinguish representative demonstrations from delivered work and describe inquiry availability truthfully.",
+    "avoid": [
+      "Invented expertise, affiliations, endorsements, testimonials or results.",
+      "Large-team implications and guaranteed prices or delivery dates.",
+      "Generic agency slogans replacing useful information.",
+      "Excessive jargon or visitor-facing implementation notes.",
+      "False sending success or live-integration claims.",
+      "Treating Concept study identification as removable placeholder copy."
+    ]
+  }
+}

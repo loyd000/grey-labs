@@ -1,0 +1,171 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "id": "operations_overview_visual",
+      "kind": "component",
+      "status": "existing",
+      "purpose": "Reusable native Operations workspace concept for the hero and selected work.",
+      "requirements": [
+        "Reuse the verified data-component=\"operations_overview_visual\" markup in index.html, its styles.css rules, and script.js filter handlers. No dependency acquisition is required.",
+        "Retain Customer portal, Order sync, and Operations dashboard with their representative statuses, priorities, and activity.",
+        "Keep All projects, In progress, and Review filters accessible and limited to local demonstration state.",
+        "Preserve adjacent Operations workspace · Concept study identification.",
+        "Adapt placement to the blueprint's meridian-01-hero and ariyana-studio-08-showreel frames during Build. Existing availability does not establish conformity to the new compositions.",
+        "Reflow compact content without clipping controls or shrinking interface text. Do not substitute historical dashboard SVGs or generated screenshots."
+      ],
+      "role": "component",
+      "sectionIds": [
+        "hero",
+        "work"
+      ],
+      "aspectRatio": "16:9",
+      "composition": "Straight-on native workspace with an application header, approximately 18% sidebar and 82% main content, project rows, priorities, and activity. Keep surrounding headline and project copy outside interactive content. Use the broad hero media region and centered work viewer; allow natural height on compact screens rather than cropping.",
+      "source": {
+        "kind": "project",
+        "reference": "index.html",
+        "license": "Existing project-native implementation; supporting files: styles.css and script.js. No third-party component was fetched."
+      },
+      "destination": "index.html"
+    },
+    {
+      "id": "workflow_overview_visual",
+      "kind": "component",
+      "status": "existing",
+      "purpose": "Interactive native Connected workflows concept in selected work.",
+      "requirements": [
+        "Reuse the verified data-component=\"workflow_overview_visual\" markup, existing styling, and local workflow selection handlers.",
+        "Retain Order sync and the four steps: New order received, Validate order details, Update business system, and Notify the team.",
+        "Expose representative configuration for required fields Order reference and Email, destination Business system, and notification channel Team updates.",
+        "Keep selection semantics, keyboard access, and readable fallback content. Do not contact external services or imply a live integration.",
+        "Preserve adjacent Concept study identification and adapt the existing editor to the blueprint's centered work viewer during Build.",
+        "The validation pane nested inside this editor belongs to this component. It does not add work to the separate workflow_detail_visual record's sectionIds."
+      ],
+      "role": "component",
+      "sectionIds": [
+        "work"
+      ],
+      "aspectRatio": "4:3",
+      "composition": "Straight-on editor with compact application header, Order sync title, four ordered step controls, and selected-step configuration alongside. Place inside the centered reference media frame without a fake play button. Stack configuration below steps on compact screens and grow the frame to retain all content. Keep project copy outside the interface.",
+      "source": {
+        "kind": "project",
+        "reference": "index.html",
+        "license": "Existing project-native implementation; supporting files: styles.css and script.js. No third-party component was fetched."
+      },
+      "destination": "index.html"
+    },
+    {
+      "id": "workflow_detail_visual",
+      "kind": "component",
+      "status": "existing",
+      "purpose": "Static native validation excerpt shared by About and Process.",
+      "requirements": [
+        "Reuse the verified data-component=\"workflow_detail_visual\" instances in About and Process.",
+        "Retain Validate order details, required fields Order reference and Email, and next step Update business system.",
+        "Keep static semantic content without dead controls and preserve the appropriate adjacent Concept study caption.",
+        "Share records and styling with the workflow overview while retaining unique instance identifiers.",
+        "Adapt the existing pane to the blueprint's About placement and narrower Process frame during Build. No screenshot or component download is required."
+      ],
+      "role": "component",
+      "sectionIds": [
+        "about",
+        "process"
+      ],
+      "aspectRatio": "4:3",
+      "composition": "Focused straight-on validation pane with heading above a two-item required-fields list and a quiet next-step row below. In About, occupy approximately 36% of desktop content width beside the prose. In Process, occupy the narrower part of the 60:40 media pair. Keep captions outside, avoid text overlays, and use natural height on compact screens.",
+      "source": {
+        "kind": "project",
+        "reference": "index.html",
+        "license": "Existing project-native HTML and CSS implementation. No third-party component was fetched."
+      },
+      "destination": "index.html"
+    },
+    {
+      "id": "operations_detail_visual",
+      "kind": "component",
+      "status": "existing",
+      "purpose": "Static native project-planning excerpt in Process.",
+      "requirements": [
+        "Reuse the verified data-component=\"operations_detail_visual\" panel and existing styles.",
+        "Retain Customer portal and three task rows: Review navigation with In review, Confirm required fields with To do, and Prepare handover notes with To do.",
+        "Keep Interface planning · Concept study adjacent.",
+        "Preserve readable task states without adding metrics, dead controls, or delivered-project claims.",
+        "Adapt placement to the wider Process media frame during Build without rasterizing the panel."
+      ],
+      "role": "component",
+      "sectionIds": [
+        "process"
+      ],
+      "aspectRatio": "3:2",
+      "composition": "Straight-on project detail with Customer portal heading and three generously spaced task rows with aligned status text. Occupy the wider approximately 60% portion of the Process media pair. Keep captions and explanatory prose outside the panel. Compact layouts stack and grow naturally without cropping.",
+      "source": {
+        "kind": "project",
+        "reference": "index.html",
+        "license": "Existing project-native HTML and CSS implementation. No third-party component was fetched."
+      },
+      "destination": "index.html"
+    },
+    {
+      "id": "instrument_sans_variable",
+      "kind": "font",
+      "status": "ready",
+      "purpose": "Approved display, body, navigation, wordmark, and control typography.",
+      "requirements": [
+        "Verified local TrueType variable file: 194336 bytes; weight axis 400–700; width axis 75–100.",
+        "Use upright weights 400, 500, 600, and 700 at default width 100. No italic is required or acquired.",
+        "Verified local license: assets/fonts/instrumentsans/OFL.txt, SIL Open Font License 1.1.",
+        "Computed local Git blob SHA: 3589b81b22d3defc725dfdcdf16b5da7c9adc691, matching the previously recorded provenance.",
+        "The official Google Fonts family repository was checked. A fresh remote binary comparison was blocked by network access; no new binary-match claim is made.",
+        "Retain the existing local @font-face declaration. Verify actual browser loading and required weights during Build."
+      ],
+      "role": "font",
+      "sectionIds": [
+        "hero",
+        "work",
+        "services",
+        "about",
+        "process",
+        "faq",
+        "contact",
+        "footer"
+      ],
+      "source": {
+        "kind": "external",
+        "reference": "https://github.com/google/fonts/blob/main/ofl/instrumentsans/InstrumentSans%5Bwdth%2Cwght%5D.ttf",
+        "license": "SIL Open Font License 1.1. Copyright 2022 The Instrument Sans Project Authors. Local license: assets/fonts/instrumentsans/OFL.txt."
+      },
+      "destination": "assets/fonts/instrumentsans/InstrumentSans-Variable.ttf"
+    },
+    {
+      "id": "azeret_mono_variable",
+      "kind": "font",
+      "status": "ready",
+      "purpose": "Approved typography for concise labels, indices, and interface metadata.",
+      "requirements": [
+        "Verified local TrueType variable file: 106092 bytes; weight axis 100–900.",
+        "Use approved upright weights 400 and 500. No italic is required or acquired.",
+        "Verified local license: assets/fonts/azeretmono/OFL.txt, SIL Open Font License 1.1.",
+        "Computed local Git blob SHA: 105c12bf6068e656b2ad374e21645857e24dad78, matching the previously recorded provenance.",
+        "The official Google Fonts family repository was checked. A fresh remote binary comparison was blocked by network access; no new binary-match claim is made.",
+        "Retain the existing local @font-face declaration. Footer consumption was confirmed through its existing metadata label."
+      ],
+      "role": "font",
+      "sectionIds": [
+        "hero",
+        "work",
+        "services",
+        "about",
+        "process",
+        "faq",
+        "contact",
+        "footer"
+      ],
+      "source": {
+        "kind": "external",
+        "reference": "https://github.com/google/fonts/blob/main/ofl/azeretmono/AzeretMono%5Bwght%5D.ttf",
+        "license": "SIL Open Font License 1.1. Copyright 2021 The Azeret Project Authors. Local license: assets/fonts/azeretmono/OFL.txt."
+      },
+      "destination": "assets/fonts/azeretmono/AzeretMono-Variable.ttf"
+    }
+  ]
+}

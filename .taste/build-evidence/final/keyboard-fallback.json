@@ -1,0 +1,16 @@
+{
+  "errors": [],
+  "menuSelection": true,
+  "keyboardFAQ": true,
+  "keyboardWorkflow": "ACTION\n\nUpdate business system\n\nDestination\n\nBusiness system",
+  "keyboardFilter": [
+    "01Customer portalIn progress"
+  ],
+  "fallback": {
+    "sections": 7,
+    "visible": true,
+    "disabled": true,
+    "records": 6,
+    "overflow": false
+  }
+}
