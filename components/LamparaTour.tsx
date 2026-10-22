@@ -1,125 +1,54 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
+import * as S from '@/components/tour/scenes';
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
 
-// Scroll tour of Lampara: a live HTML rebuild of the CRM dashboard (not a screenshot), pinned while the page
-// scrolls so its parts can move on their own.
-//   Beat 1: the app arrives, the sidebar slides in, the stats count up, the recent projects fill in.
-//   Beat 2: a new project is added and its stage pill walks the pipeline, moving the stats as it goes.
-// The mock is laid out at a fixed 1280×800 and scaled to fit, so it keeps the real app's proportions at any width.
-// Without JS or with reduced motion it renders in its finished (end of beat 2) state.
-// Colours are the CRM's own dark theme (.dark in Lampara's src/index.css) and its STAGE_COLORS map.
+// Scroll tour of Lampara, "one job, one take": Jose Mercado from his first message to the crew's payday.
+// Every scene is a layer holding a world (one or more screens from components/tour/scenes.tsx) under a camera.
+// A camera is a pan/zoom transform on the world; scenes hand over by zooming through a detail that becomes
+// the next scene (chat → New Project button, row → pipeline card, quote chip → quotation, map pin → phone).
+// The section pins and the scroll position scrubs one timeline. No-JS / reduced motion shows the finale.
 
-const W = 1280;
+type Cam = { x: number; y: number; z: number };
 
-const c = {
-  bg: 'oklch(0.145 0 0)', card: 'oklch(0.205 0 0)', muted: 'oklch(0.269 0 0)',
-  fg: 'oklch(0.985 0 0)', mutedFg: 'oklch(0.708 0 0)', primary: 'oklch(0.922 0 0)', primaryFg: 'oklch(0.205 0 0)',
-  border: 'oklch(1 0 0 / 10%)',
-};
+// Centres scene point (x, y) in the 1280×800 viewport at zoom z. Zoom tweens in log space so it feels even.
+function camera(el: HTMLElement, start: Cam) {
+  const st = { x: start.x, y: start.y, lz: Math.log(start.z) };
+  const apply = () => { const z = Math.exp(st.lz); el.style.transform = `translate(${S.W / 2 - st.x * z}px,${S.H / 2 - st.y * z}px) scale(${z})`; };
+  apply();
+  return (to: Partial<Cam>, vars: gsap.TweenVars = {}) => {
+    const v: gsap.TweenVars = { duration: 1, ease: 'power2.inOut', ...vars, onUpdate: apply };
+    if (to.x !== undefined) v.x = to.x;
+    if (to.y !== undefined) v.y = to.y;
+    if (to.z !== undefined) v.lz = Math.log(to.z);
+    return gsap.to(st, v);
+  };
+}
 
-// Stage pill = the stage hue at 10% behind the hue itself, as STAGE_COLORS does with bg-x/10 text-x.
-const hue = { info: 'oklch(0.672 0.13 255)', warning: 'oklch(0.678 0.146 70)', contract: 'oklch(0.687 0.15 303)', install: 'oklch(0.76 0.135 50)', success: 'oklch(0.653 0.15 152)', danger: 'oklch(0.687 0.17 27)' };
-const pill = (h?: string) => h ? { background: `color-mix(in oklch, ${h} 10%, transparent)`, color: h } : { background: c.muted, color: c.fg };
+const finFit = { x: S.FIN.w / 2, y: S.FIN.h / 2 - 20, z: 0.42 }; // leaves room for the tile labels above the top row
 
-const nav = [
-  { label: 'Dashboard', icon: 'M3 3h7v9H3zM14 3h7v5h-7zM14 12h7v9h-7zM3 16h7v5H3z' },
-  { label: 'Projects', icon: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75' },
-  { label: 'Quotes', icon: 'M6 2h12v20H6zM9 7h6M9 11h6M9 15h3' },
-  { label: 'Calendar', icon: 'M3 5h18v16H3zM16 3v4M8 3v4M3 10h18' },
-  { label: 'Warehouse', icon: 'M3 9l9-6 9 6v12H3zM9 21v-6h6v6' },
-  { label: 'HR', icon: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1' },
+const beats = [
+  ['01 · Inquiry', 'it starts with a message.'],
+  ['02 · CRM', 'every lead lands in one place.'],
+  ['03 · Sales', 'quoted, signed, moving.'],
+  ['04 · Schedule and warehouse', 'booked, picked, on the road.'],
+  ['05 · On site', 'checked on site, synced to the office.'],
+  ['06 · HR and payroll', 'attendance in, payroll out.'],
+  ['07 · Lampara', 'one system, inquiry to payday.'],
 ];
 
-// The stage the new project walks through in beat 2, in pipeline order.
-const journey = [
-  { stage: 'New Lead' },
-  { stage: 'Survey Scheduled', h: hue.info },
-  { stage: 'Proposal Sent', h: hue.warning },
-  { stage: 'Contract Signed', h: hue.contract },
-  { stage: 'Installation Scheduled', h: hue.install },
-  { stage: 'Active Customer', h: hue.success },
-];
-const last = journey.length - 1;
-
-// base = what beat 1 counts up to; now(added, step) = the value once the new project exists and is at `step`.
-const stats = [
-  { label: 'Total Projects', base: 128, now: (added: boolean) => 128 + +added },
-  { label: 'Active Pipeline', base: 37, now: (added: boolean, step: number) => 37 + +(added && step < last) },
-  { label: 'Contracts Signed', base: 52, now: (added: boolean, step: number) => 52 + +(added && step >= 3) },
-  { label: 'Installations', base: 41, now: (added: boolean, step: number) => 41 + +(added && step >= last) },
-];
-
-const projects = [
-  { name: 'Maria Santos', city: 'Antipolo City', stage: 'Inspection Scheduled', h: hue.info, when: '2d ago' },
-  { name: 'Juan Dela Cruz', city: 'Quezon City', stage: 'New Lead', when: '3d ago' },
-  { name: 'Liza Fernandez', city: 'Marikina City', stage: 'Cancelled', h: hue.danger, when: '5d ago' },
-  { name: 'Pedro Reyes', city: 'Dasmariñas', stage: 'Proposal Sent', h: hue.warning, when: '6d ago' },
-  { name: 'Ana Gonzales', city: 'Los Baños', stage: 'Contract Signed', h: hue.contract, when: '15d ago' },
-  { name: 'Ricardo Bautista', city: 'Lipa City', stage: 'Active Customer', h: hue.success, when: '25d ago' },
-];
-
-// Beat 3: the last items of the CRM's QA/QC checklist, as the field tech ticks them on site.
-const checklist = [
-  ['Inverter powered on successfully', 'Matagumpay na na-power on ang inverter'],
-  ['No fault or alarm displayed', 'Walang fault o alarm na ipinapakita'],
-  ['Monitoring system connected', 'Nakakonekta ang monitoring system'],
-  ['Voltage and current checked', 'Nasuri ang boltahe at kuryente'],
-  ['Final cleaning completed', 'Nakumpleto ang huling paglilinis'],
-  ['Photos taken for documentation', 'Kumuha ng mga larawan para sa dokumentasyon'],
-];
-const TOTAL_ITEMS = 43;
-const answered = (ticked: number) => TOTAL_ITEMS - checklist.length + ticked;
-const sync = {
-  offline: { text: 'Offline · saved on this phone', style: pill(hue.warning) },
-  synced: { text: 'Synced to the office', style: pill(hue.success) },
-};
-
-// Beat 4: the same crew times in on the phone, then the HR module's payroll run for the cutoff.
-// Names, rates and deductions are from the HR demo data; gross = rate × days.
-const crew = [
-  { name: 'Engineer, Erwin', time: 'In 6:56 AM', rate: 950, days: 10, ded: 497.52 },
-  { name: 'Bautista, Kevin', time: 'In 7:06 AM · 6 min late', late: true, rate: 600, days: 10, ded: 340 },
-  { name: 'Cruz, Paolo', time: 'In 6:58 AM', rate: 650, days: 10, ded: 1357.4 },
-  { name: 'Dizon, Mark', time: 'In 6:59 AM', rate: 650, days: 9, ded: 857.4 },
-  { name: 'Lopez, Ryan', time: 'In 7:00 AM', rate: 700, days: 10, ded: 550.2 },
-  { name: 'Ramos, Jayson', time: 'In 7:02 AM', rate: 620, days: 10, ded: 255.96 },
-];
-const gross = crew.reduce((sum, p) => sum + p.rate * p.days, 0);
-const deductions = crew.reduce((sum, p) => sum + p.ded, 0);
-const peso = (n: number) => '₱' + n.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const payrollStats = [
-  { label: 'Employees', value: crew.length, format: (n: number) => String(Math.round(n)) },
-  { label: 'Gross', value: gross, format: peso },
-  { label: 'Deductions', value: deductions, format: peso },
-  { label: 'Net pay', value: gross - deductions, format: peso },
-];
-const crewPill = (p: (typeof crew)[number], isIn: boolean) =>
-  isIn ? { text: `✓ ${p.time}`, style: pill(p.late ? hue.warning : hue.success) } : { text: '× Not in', style: pill(hue.danger) };
-const runState = {
-  draft: { text: 'Draft', style: pill(hue.warning) },
-  approved: { text: 'Approved', style: pill(hue.success) },
-};
-const hrNav = [
-  { label: 'Today', icon: nav[0].icon },
-  { label: 'Approvals', icon: nav[2].icon },
-  { label: 'Manpower', icon: nav[1].icon },
-  { label: 'Timesheet', icon: nav[3].icon },
-  { label: 'Payroll', icon: 'M2 6h20v12H2zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6M6 12h.01M18 12h.01' },
-  { label: 'Employees', icon: nav[5].icon },
-];
-
-const rowClass = 'grid grid-cols-[1.3fr_1fr_auto] items-center px-5 py-3';
-
-function Icon({ d, className = 'size-[18px]' }: { d: string; className?: string }) {
+function Layer({ name, w = S.W, h = S.H, cam, children }: { name: string; w?: number; h?: number; cam?: Cam; children: ReactNode }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={className}>
-      <path d={d} />
-    </svg>
+    <div data-layer={name} className={`absolute inset-0 overflow-hidden ${cam ? '' : 'invisible'}`}>
+      <div data-cam="" className="absolute top-0 left-0 origin-top-left" style={{ width: w, height: h, transform: cam && `translate(${S.W / 2 - cam.x * cam.z}px,${S.H / 2 - cam.y * cam.z}px) scale(${cam.z})` }}>
+        {children}
+      </div>
+    </div>
   );
 }
 
@@ -129,325 +58,333 @@ export default function LamparaTour() {
   useEffect(() => {
     const section = root.current!;
     const frame = section.querySelector<HTMLElement>('[data-tour-frame]')!;
-    const fit = () => frame.style.setProperty('--s', String(frame.clientWidth / W));
+    const pinEl = section.querySelector<HTMLElement>('[data-tour-pin]')!;
+    const fit = () => frame.style.setProperty('--s', String(frame.clientWidth / S.W));
     const ro = new ResizeObserver(fit);
     ro.observe(frame);
     fit();
 
     const mm = gsap.matchMedia();
     mm.add('(prefers-reduced-motion: no-preference)', () => {
-      const q = gsap.utils.selector(section);
-      const counts = q('[data-tour-count]');
-      const pillEl = q('[data-tour-pill]')[0];
-      const setStats = (added: boolean, step: number) => counts.forEach((el, i) => { el.textContent = String(stats[i].now(added, step)); });
-      const setStage = (step: number) => { pillEl.textContent = journey[step].stage; Object.assign(pillEl.style, pill(journey[step].h)); };
+      const names = ['chat', 'dash', 'pipe', 'quote', 'prep', 'field', 'pay', 'fin'] as const;
+      const L = Object.fromEntries(names.map(n => [n, section.querySelector<HTMLElement>(`[data-layer="${n}"]`)!])) as Record<(typeof names)[number], HTMLElement>;
+      const all = (l: HTMLElement, s: string) => Array.from(l.querySelectorAll<HTMLElement>(s));
+      const one = (l: HTMLElement, s: string) => l.querySelector<HTMLElement>(s)!;
+      const camEl = (l: HTMLElement) => one(l, '[data-cam]');
+      // Centre of an element in its world's own units, whatever the camera and page scale are right now.
+      const pos = (el: Element, l: HTMLElement) => {
+        const cam = camEl(l), r = el.getBoundingClientRect(), cr = cam.getBoundingClientRect(), k = cam.offsetWidth / cr.width;
+        return { x: (r.left - cr.left + r.width / 2) * k, y: (r.top - cr.top + r.height / 2) * k };
+      };
+      const text = (el: HTMLElement, t: { text: string; style: object }) => { el.textContent = t.text; Object.assign(el.style, t.style); };
+
+      // Measure everything in its finished layout first, before any tween moves it.
+      const btn = pos(one(L.dash, '[data-dash-btn]'), L.dash);
+      const newRowAt = pos(one(L.dash, '[data-dash-new]'), L.dash);
+      const cardAt = pos(one(L.pipe, '[data-pipe-card]'), L.pipe);
+      const chipAt = pos(one(L.pipe, '[data-pipe-quote]'), L.pipe);
+      const flies = all(L.prep, '[data-wh-fly]');
+      const flyAt = flies.map(el => pos(el, L.prep));
+      const vanAt = pos(one(L.prep, '[data-wh-van]'), L.prep);
+      const pinA = pos(one(L.prep, '[data-map-pin-a] circle'), L.prep);
+      const pinB = pos(one(L.prep, '[data-map-pin-b] circle:last-of-type'), L.prep);
+      const dots = all(L.field, '[data-f-dot]');
+      const dotAt = pos(dots[0], L.field);
+      const officeAt = pos(one(L.field, '[data-f-office-card]'), L.field);
+      const slips = all(L.pay, '[data-pay-slip]');
+      const slipAt = slips.map(el => pos(el, L.pay));
+      const tableAt = pos(one(L.pay, '[data-pay-table]'), L.pay);
+
+      // The markup holds every scene's finished state (for the finale tiles and no-JS); rewind the live ones.
+      one(L.chat, '[data-chat-type]').textContent = '';
+      all(L.dash, '[data-dash-count]').forEach(el => { el.textContent = '0'; });
+      one(L.quote, '[data-q-total]').textContent = S.peso(0);
+      all(L.prep, '[data-wh-count]').forEach((el, i) => { el.textContent = S.stock[i].on.toLocaleString('en-PH'); });
+      one(L.prep, '[data-wh-loaded]').textContent = '0';
+      one(L.pay, '[data-flip-num]').textContent = '14';
+      all(L.pay, '[data-pay-count]').forEach((el, i) => { el.textContent = S.payrollStats[i].format(0); });
+      text(one(L.pay, '[data-pay-run]'), S.runState.draft);
+
+      const caps = all(section, '[data-beat]');
+      gsap.set(caps, { autoAlpha: 0 });
+      gsap.set(caps[0], { autoAlpha: 1 });
+      gsap.set(Object.values(L), { autoAlpha: 0 });
+      gsap.set(L.chat, { autoAlpha: 1 });
+
+      const chatCam = camera(camEl(L.chat), { x: 640, y: 400, z: 1 });
+      const dashCam = camera(camEl(L.dash), { ...btn, z: 5 });
+      const pipeCam = camera(camEl(L.pipe), { ...cardAt, z: 2.4 });
+      const quoteCam = camera(camEl(L.quote), { x: 640, y: 400, z: 0.55 });
+      const prepCam = camera(camEl(L.prep), { x: 640, y: 400, z: 1.35 });
+      const fieldCam = camera(camEl(L.field), { x: 640, y: 400, z: 1 });
+      const payCam = camera(camEl(L.pay), { x: 640, y: 400, z: 1.3 });
+      const finCam = camera(camEl(L.fin), { x: 2040, y: 1320, z: 1 }); // starts on the payroll tile
 
       const tl = gsap.timeline({
         defaults: { ease: 'power2.out' },
-        scrollTrigger: { trigger: section, start: 'top top', end: '+=720%', pin: true, scrub: 0.6 },
+        // Pin the inner wrapper, not the <section>: the pin-spacer GSAP wraps around the pinned node must stay
+        // inside a node React owns, or React can't remove the section when the page unmounts.
+        scrollTrigger: { trigger: pinEl, start: 'top top', end: '+=1300%', pin: true, scrub: 0.8 },
       });
+      const caption = (n: number, at: string) => tl
+        .to(caps[n - 2], { y: -30, autoAlpha: 0, duration: 0.35 }, at)
+        .fromTo(caps[n - 1], { y: 30, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.35 }, `${at}+=0.15`);
+      // A scrubbed counter: tweens 0→1 (or a → b) and hands the value to `set` on every frame, both directions.
+      const count = (from: number, to: number, set: (v: number) => void, vars: gsap.TweenVars, at: string) => {
+        const o = { v: from };
+        tl.to(o, { v: to, ease: 'none', ...vars, onUpdate: () => set(o.v) }, at);
+      };
 
-      // Beat 1
-      tl.fromTo(q('[data-tour-app]'),
-        { scale: 0.62, y: 90, opacity: 0.25, clipPath: 'inset(8% 10% 8% 10% round 18px)' },
-        { scale: 1, y: 0, opacity: 1, clipPath: 'inset(0% 0% 0% 0% round 10px)', duration: 1 })
-        .from(q('[data-tour-side]'), { xPercent: -100, duration: 0.6 }, 0.55)
-        .from(q('[data-tour-nav]'), { x: -24, opacity: 0, stagger: 0.06, duration: 0.35 }, 0.75)
-        .from(q('[data-tour-head]'), { y: 24, opacity: 0, stagger: 0.08, duration: 0.4 }, 0.8)
-        .from(q('[data-tour-stat]'), { y: 40, opacity: 0, stagger: 0.1, duration: 0.45 }, 1.05);
-      // Count each stat from 0 while its card rises; the server-rendered text is the finished state for no-JS.
-      counts.forEach((el, i) => {
-        const counter = { v: 0 };
-        tl.to(counter, { v: stats[i].base, duration: 0.7, ease: 'power1.out', onUpdate: () => { el.textContent = String(Math.round(counter.v)); } }, 1.1 + i * 0.1);
+      /* 1 · Inquiry: the message types itself out, the replies pop in, then the chat shrinks into New Project. */
+      const msgs = all(L.chat, '[data-chat-msg]');
+      const typeEl = one(L.chat, '[data-chat-type]');
+      const first = S.chat[0].text;
+      tl.addLabel('b1', 0.2)
+        .fromTo(msgs[0], { scale: 0.6, autoAlpha: 0, transformOrigin: '0% 100%' }, { scale: 1, autoAlpha: 1, duration: 0.25 }, 'b1');
+      count(0, first.length, v => { typeEl.textContent = first.slice(0, Math.round(v)); }, { duration: 1 }, 'b1+=0.2');
+      msgs.slice(1).forEach((m, i) => tl.fromTo(m,
+        { scale: 0.5, autoAlpha: 0, y: 24, transformOrigin: i % 2 ? '0% 100%' : '100% 100%' },
+        { scale: 1, autoAlpha: 1, y: 0, duration: 0.3, ease: 'back.out(1.8)' }, `b1+=${1.5 + i * 0.45}`));
+
+      tl.addLabel('toDash', 'b1+=3')
+        .add(chatCam({ z: 0.1 }, { duration: 0.8, ease: 'power3.in' }), 'toDash')
+        .to(L.chat, { autoAlpha: 0, duration: 0.2 }, 'toDash+=0.65')
+        .to(L.dash, { autoAlpha: 1, duration: 0.3 }, 'toDash+=0.4')
+        .to(one(L.dash, '[data-dash-btn]'), { scale: 1.18, duration: 0.12, yoyo: true, repeat: 1, ease: 'power1.inOut' }, 'toDash+=0.8')
+        .add(dashCam({ x: 640, y: 400, z: 1 }, { duration: 1.3, ease: 'power3.inOut' }), 'toDash+=1');
+
+      /* 2 · CRM: stats count up, rows rise, Jose's row drops in on top, then the camera dives into it. */
+      caption(2, 'toDash+=1');
+      const dashCounts = all(L.dash, '[data-dash-count]');
+      dashCounts.forEach((el, i) => count(0, S.dashStats[i].base, v => { el.textContent = String(Math.round(v)); }, { duration: 0.9, ease: 'power1.out' }, `toDash+=${1.4 + i * 0.08}`));
+      tl.from(all(L.dash, '[data-dash-row]'), { y: 30, autoAlpha: 0, stagger: 0.06, duration: 0.4 }, 'toDash+=1.6');
+      const newRow = one(L.dash, '[data-dash-new]');
+      tl.addLabel('b2', 'toDash+=2.7')
+        .fromTo(newRow, { height: 0, autoAlpha: 0 }, {
+          height: 'auto', autoAlpha: 1, duration: 0.5, ease: 'back.out(2)',
+          onUpdate() { const added = +(this.progress() > 0.4); dashCounts[0].textContent = String(128 + added); dashCounts[1].textContent = String(37 + added); },
+        }, 'b2')
+        .fromTo(newRow, { backgroundColor: 'rgba(255,255,255,0.16)' }, { backgroundColor: 'rgba(255,255,255,0.04)', duration: 0.6 }, 'b2+=0.4');
+
+      tl.addLabel('toPipe', 'b2+=1.4')
+        .add(dashCam({ ...newRowAt, z: 2.4 }, { duration: 0.9, ease: 'power3.in' }), 'toPipe')
+        .to(L.dash, { autoAlpha: 0, duration: 0.3 }, 'toPipe+=0.7')
+        .to(L.pipe, { autoAlpha: 1, duration: 0.3 }, 'toPipe+=0.6');
+
+      /* 3 · Sales: the card rides the pipeline with the camera panning along; at Proposal the quote chip
+         opens into the quotation, which lifts off the screen, gets signed and stamped, then folds back. */
+      caption(3, 'toPipe+=0.6');
+      const card = one(L.pipe, '[data-pipe-card]');
+      const pipePill = one(L.pipe, '[data-pipe-pill]');
+      const chip = one(L.pipe, '[data-pipe-quote]');
+      const STEP = S.PIPE.col + S.PIPE.gap;
+      const half = S.W / 1.3 / 2;
+      const PIPE_Y = 340; // keeps the board's header in frame at z 1.3
+      const followX = (i: number) => gsap.utils.clamp(half, S.PIPE.width - half, cardAt.x + i * STEP + 220);
+      const setStage = (i: number) => text(pipePill, { text: S.pipeline[i].stage, style: S.pill(S.pipeline[i].h) });
+      setStage(0);
+      tl.add(pipeCam({ x: followX(0), y: PIPE_Y, z: 1.3 }, { duration: 1, ease: 'power3.out' }), 'toPipe+=0.9');
+      const moveTo = (i: number, at: string) => {
+        tl.addLabel(`col${i}`, at)
+          .to(card, { x: (i) * STEP, duration: 0.8, ease: 'power2.inOut', onUpdate() { setStage(this.progress() > 0.5 ? i : i - 1); } }, `col${i}`)
+          .to(card, { keyframes: { y: [0, -18, 0], rotate: [0, 4, 0], scale: [1, 1.07, 1] }, duration: 0.8, ease: 'none' }, `col${i}`)
+          .add(pipeCam({ x: followX(i) }, { duration: 0.9 }), `col${i}`);
+      };
+      moveTo(1, 'toPipe+=2');
+      moveTo(2, 'toPipe+=3');
+      tl.fromTo(chip, { scale: 0, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.35, ease: 'back.out(2.5)' }, 'toPipe+=3.8');
+
+      const doc = one(L.quote, '[data-q-doc]');
+      const totalEl = one(L.quote, '[data-q-total]');
+      tl.addLabel('toQuote', 'toPipe+=4.5')
+        .add(pipeCam({ x: chipAt.x + 2 * STEP, y: chipAt.y, z: 4 }, { duration: 0.8, ease: 'power3.in' }), 'toQuote')
+        .to(L.pipe, { autoAlpha: 0, duration: 0.3 }, 'toQuote+=0.6')
+        .to(L.quote, { autoAlpha: 1, duration: 0.25 }, 'toQuote+=0.55')
+        .add(quoteCam({ z: 1 }, { duration: 1, ease: 'power3.out' }), 'toQuote+=0.6')
+        .from(all(L.quote, '[data-q-row]'), { x: -50, autoAlpha: 0, stagger: 0.12, duration: 0.35 }, 'toQuote+=1.2');
+      count(0, S.quoteTotal, v => { totalEl.textContent = S.peso(Math.round(v)); }, { duration: 1, ease: 'power1.out' }, 'toQuote+=1.4');
+      tl.to(doc, { rotateX: 16, rotateY: -10, scale: 0.9, y: -10, transformPerspective: 1400, boxShadow: '0 70px 90px -40px rgba(0,0,0,.9)', duration: 0.6, ease: 'power2.inOut' }, 'toQuote+=2.5')
+        .fromTo(one(L.quote, '[data-q-sign]'), { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.9, ease: 'power1.inOut' }, 'toQuote+=3')
+        .fromTo(one(L.quote, '[data-q-stamp]'), { scale: 2.6, autoAlpha: 0, rotate: -34 }, { scale: 1, autoAlpha: 1, rotate: -12, duration: 0.3, ease: 'power4.in' }, 'toQuote+=4')
+        .to(doc, { keyframes: { x: [0, 7, -6, 4, 0] }, duration: 0.2, ease: 'none' }, 'toQuote+=4.3')
+        .to(doc, { rotateX: 0, rotateY: 0, scale: 1, y: 0, boxShadow: '0 0 0 0 rgba(0,0,0,0)', duration: 0.5 }, 'toQuote+=4.7');
+
+      tl.addLabel('backPipe', 'toQuote+=5.4')
+        .add(quoteCam({ z: 0.55 }, { duration: 0.7, ease: 'power3.in' }), 'backPipe')
+        .to(L.quote, { autoAlpha: 0, duration: 0.25 }, 'backPipe+=0.5')
+        .to(L.pipe, { autoAlpha: 1, duration: 0.25 }, 'backPipe+=0.45')
+        .add(pipeCam({ x: followX(2), y: PIPE_Y, z: 1.3 }, { duration: 0.8, ease: 'power3.out' }), 'backPipe+=0.6');
+      moveTo(3, 'backPipe+=1.5');
+      moveTo(4, 'backPipe+=2.5');
+
+      /* 4 · Schedule and warehouse: the install drops onto the calendar, a whip pan to the pick list where the
+         stock flies into the van, the van drives off onto the map and the camera rides along to Bacoor. */
+      tl.addLabel('toPrep', 'backPipe+=3.6')
+        .add(pipeCam({ z: 0.75 }, { duration: 0.7, ease: 'power2.in' }), 'toPrep')
+        .to(L.pipe, { autoAlpha: 0, duration: 0.4 }, 'toPrep+=0.3')
+        .to(L.prep, { autoAlpha: 1, duration: 0.4 }, 'toPrep+=0.3')
+        .add(prepCam({ z: 1 }, { duration: 0.9, ease: 'power3.out' }), 'toPrep+=0.3')
+        .from(one(L.prep, '[data-cal-chip]'), { y: -420, autoAlpha: 0, rotate: -10, duration: 0.8, ease: 'bounce.out' }, 'toPrep+=0.9')
+        .fromTo(one(L.prep, '[data-cal-day]'), { backgroundColor: 'rgba(255,255,255,0)' }, { backgroundColor: 'rgba(255,255,255,0.07)', duration: 0.3 }, 'toPrep+=1.5');
+      caption(4, 'toPrep+=0.3');
+
+      const whX = S.W + 120 + S.W / 2; // warehouse screen centre
+      tl.addLabel('toWh', 'toPrep+=2.3')
+        .add(prepCam({ x: (640 + whX) / 2, z: 0.62 }, { duration: 0.45, ease: 'power2.in' }), 'toWh')
+        .add(prepCam({ x: whX, z: 1 }, { duration: 0.55, ease: 'power2.out' }), 'toWh+=0.45');
+      const whCounts = all(L.prep, '[data-wh-count]');
+      const loadedEl = one(L.prep, '[data-wh-loaded]');
+      flies.forEach((el, i) => {
+        const dx = vanAt.x - flyAt[i].x, dy = vanAt.y - flyAt[i].y;
+        const at = `toWh+=${1.2 + i * 0.4}`;
+        tl.to(el, { autoAlpha: 1, duration: 0.05 }, at)
+          .to(el, { keyframes: { x: [0, dx * 0.5, dx], y: [0, Math.min(0, dy) - 150, dy], scale: [1, 1.4, 0.5], easeEach: 'sine.inOut' }, duration: 0.6, ease: 'none' }, at)
+          .to(el, { autoAlpha: 0, duration: 0.08 }, `${at}+=0.55`);
+        count(S.stock[i].on, S.stock[i].on - S.stock[i].pick, v => { whCounts[i].textContent = Math.round(v).toLocaleString('en-PH'); }, { duration: 0.4 }, at);
       });
-      tl.from(q('[data-tour-row]'), { y: 30, opacity: 0, stagger: 0.07, duration: 0.4 }, 1.5)
-        .to({}, { duration: 0.4 });
+      count(0, S.stock.length, v => { loadedEl.textContent = String(Math.floor(v + 0.001)); }, { duration: 0.4 * S.stock.length + 0.2 }, 'toWh+=1.3');
+      tl.to(one(L.prep, '[data-wh-van]'), { keyframes: { x: [0, -12, 900] }, duration: 0.8, ease: 'power2.in' }, 'toWh+=3.6')
+        .add(prepCam({ ...pinA, z: 1.6 }, { duration: 0.9, ease: 'power2.inOut' }), 'toWh+=3.9');
 
-      // Beat 2: the caption swaps, "New Project" is pressed, the project row opens at the top of the list
-      // and its stage pill steps through the pipeline while the stats follow.
-      tl.addLabel('beat2')
-        .to(q('[data-tour-beat="1"]'), { y: -30, opacity: 0, duration: 0.35 }, 'beat2')
-        .fromTo(q('[data-tour-beat="2"]'), { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35 }, 'beat2+=0.15')
-        .to(q('[data-tour-new-btn]'), { scale: 0.9, duration: 0.12, yoyo: true, repeat: 1, ease: 'power1.inOut' }, 'beat2+=0.3')
-        .fromTo(q('[data-tour-new]'), { height: 0, opacity: 0 }, {
-          height: 'auto', opacity: 1, duration: 0.45,
-          onStart: () => { setStage(0); },
-          onUpdate() { setStats(this.progress() > 0.5, 0); },
-        }, 'beat2+=0.6');
-      const step = { v: 0 };
-      tl.to(step, {
-        v: last, duration: 2.2, ease: 'none',
-        onUpdate: () => { const s = Math.round(step.v); setStage(s); setStats(true, s); },
-      }, '>+0.15')
-        .to(q('[data-tour-new]'), { backgroundColor: 'oklch(1 0 0 / 0%)', duration: 0.4 })
-        .to({}, { duration: 0.3 });
+      const route = one(L.prep, '[data-map-route]');
+      const mapVan = one(L.prep, '[data-map-van]');
+      tl.addLabel('drive', 'toWh+=4.8')
+        .fromTo(route, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 2.2, ease: 'power1.inOut' }, 'drive')
+        .fromTo(mapVan, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.1 }, 'drive')
+        .to(mapVan, { motionPath: { path: route as unknown as SVGPathElement, align: route as unknown as SVGPathElement, alignOrigin: [0.5, 0.5], autoRotate: true }, duration: 2.2, ease: 'power1.inOut' }, 'drive')
+        .add(prepCam({ ...pinB, z: 1.6 }, { duration: 2.2, ease: 'power1.inOut' }), 'drive');
 
-      // Beat 3: the dashboard steps back to the left and dims, the field tech's phone slides up beside it,
-      // the checklist ticks off, then the offline report syncs and the dashboard row picks it up.
-      const checks = q('[data-tour-check]');
-      const countEl = q('[data-tour-answered]')[0];
-      const barEl = q('[data-tour-bar]')[0];
-      const syncEl = q('[data-tour-sync]')[0];
-      const activityEl = q('[data-tour-activity]')[0];
+      /* 5 · On site: the Bacoor pin opens into the leadman's phone. Crew time in, the checklist ticks, three photos
+         snap, then the phone steps aside and the report streams to the office. */
+      const phone = one(L.field, '[data-f-phone]');
+      tl.addLabel('toField', 'drive+=2.4')
+        .add(prepCam({ z: 7 }, { duration: 0.8, ease: 'power3.in' }), 'toField')
+        .to(L.prep, { autoAlpha: 0, duration: 0.3 }, 'toField+=0.6')
+        .to(L.field, { autoAlpha: 1, duration: 0.2 }, 'toField+=0.5')
+        .fromTo(phone, { x: -S.PHONE.centred, scale: 0.05, rotate: -8 }, { x: -S.PHONE.centred, scale: 1, rotate: 0, duration: 0.9, ease: 'power3.out' }, 'toField+=0.5');
+      caption(5, 'toField+=0.5');
+
+      const crewPills = all(L.field, '[data-f-crew-pill]');
+      const crewIn = one(L.field, '[data-f-crew-in]');
+      const checks = all(L.field, '[data-f-check]');
+      const answeredEl = one(L.field, '[data-f-answered]');
+      const bar = one(L.field, '[data-f-bar]');
+      const strip = one(L.field, '[data-f-strip]');
+      const syncEl = one(L.field, '[data-f-sync]');
+      const officeEl = one(L.field, '[data-f-office]');
+      const setCrew = (n: number) => { crewPills.forEach((el, i) => text(el, S.crewPill(i, i < n))); crewIn.textContent = String(n); };
       const setChecks = (n: number) => {
         checks.forEach((el, i) => { el.dataset.on = String(i < n); });
-        countEl.textContent = String(answered(n));
-        barEl.style.width = `${(answered(n) / TOTAL_ITEMS) * 100}%`;
+        answeredEl.textContent = String(S.answered(n));
+        bar.style.width = `${(S.answered(n) / S.TOTAL_ITEMS) * 100}%`;
       };
-      const setSynced = (on: boolean) => {
-        const s = on ? sync.synced : sync.offline;
-        syncEl.textContent = s.text; Object.assign(syncEl.style, s.style);
-        activityEl.textContent = on ? 'Checklist synced' : 'just now';
-      };
-      setChecks(0); setSynced(false); // the markup holds the finished state for no-JS; start from the top here
+      setCrew(0); setChecks(0);
+      text(syncEl, S.syncState.offline); text(officeEl, S.officeState.waiting);
+      gsap.set(strip, { x: 0, xPercent: 0 });
 
-      tl.addLabel('beat3')
-        .to(q('[data-tour-beat="2"]'), { y: -30, opacity: 0, duration: 0.35 }, 'beat3')
-        .fromTo(q('[data-tour-beat="3"]'), { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35 }, 'beat3+=0.15')
-        .to(q('[data-tour-app]'), { xPercent: -9, scale: 0.8, opacity: 0.55, duration: 0.7, ease: 'power2.inOut' }, 'beat3')
-        .fromTo(q('[data-tour-phone]'), { yPercent: 115, rotate: 6 }, {
-          yPercent: 0, rotate: 0, duration: 0.7, ease: 'power3.out',
-          onStart: () => { setChecks(0); setSynced(false); },
-        }, 'beat3+=0.25');
-      const ticked = { v: 0 };
-      tl.to(ticked, { v: checklist.length, duration: 1.8, ease: 'none', onUpdate: () => setChecks(Math.floor(ticked.v + 0.001)) }, '>+0.1');
-      const synced = { v: 0 };
-      tl.to(synced, { v: 1, duration: 0.4, ease: 'none', onUpdate: () => setSynced(synced.v > 0.5) }, '>+0.2')
-        // The phone covers the row's activity column, so the sync shows as a green flash on the whole row.
-        // rgba, not color-mix(): GSAP can only interpolate plain colours (this is the success hue in sRGB).
-        .fromTo(q('[data-tour-new]'), { backgroundColor: 'rgba(48,168,96,0)' }, { backgroundColor: 'rgba(48,168,96,0.2)', duration: 0.25 }, '<+0.2')
-        .to(q('[data-tour-new]'), { backgroundColor: 'rgba(48,168,96,0)', duration: 0.4 })
-        .to({}, { duration: 0.3 });
+      count(0, S.crew.length, v => setCrew(Math.floor(v + 0.001)), { duration: 1.3 }, 'toField+=1.5');
+      tl.to(strip, { xPercent: -100, duration: 0.5, ease: 'power3.inOut' }, 'toField+=3');
+      count(0, S.checklist.length, v => setChecks(Math.floor(v + 0.001)), { duration: 1.3 }, 'toField+=3.6');
+      tl.to(strip, { xPercent: -200, duration: 0.5, ease: 'power3.inOut' }, 'toField+=5.1');
+      all(L.field, '[data-f-photo]').forEach((el, i) => {
+        const at = `toField+=${5.7 + i * 0.35}`;
+        tl.to(one(L.field, '[data-f-flash]'), { keyframes: { opacity: [0, 0.85, 0] }, duration: 0.2, ease: 'none' }, at)
+          .from(el, { scale: 0.2, autoAlpha: 0, rotate: -12, duration: 0.3, ease: 'back.out(2)' }, `${at}+=0.1`);
+      });
+      tl.addLabel('sync', 'toField+=7')
+        .to(phone, { x: 0, duration: 0.7, ease: 'power3.inOut' }, 'sync')
+        .from(one(L.field, '[data-f-office-card]'), { x: -560, autoAlpha: 0, duration: 0.7, ease: 'power3.out' }, 'sync+=0.2');
+      count(0, 1, v => text(syncEl, v > 0.5 ? S.syncState.synced : S.syncState.offline), { duration: 0.2 }, 'sync+=0.9');
+      dots.forEach((el, i) => {
+        const at = `sync+=${1 + i * 0.12}`;
+        const dx = officeAt.x + 220 - dotAt.x, dy = officeAt.y - dotAt.y;
+        tl.to(el, { autoAlpha: 1, duration: 0.05 }, at)
+          .to(el, { keyframes: { x: [0, dx * 0.5, dx], y: [0, dy - 90, dy], easeEach: 'sine.inOut' }, duration: 0.6, ease: 'none' }, at)
+          .to(el, { autoAlpha: 0, duration: 0.08 }, `${at}+=0.55`);
+      });
+      count(0, 1, v => text(officeEl, v > 0.5 ? S.officeState.received : S.officeState.waiting), { duration: 0.2 }, 'sync+=1.7');
+      tl.fromTo(one(L.field, '[data-f-office-card]'), { borderColor: S.c.border }, { borderColor: S.hue.success, duration: 0.2, yoyo: true, repeat: 1 }, 'sync+=1.7');
 
-      // Beat 4: the phone switches to the crew's attendance and they time in one by one; then the phone leaves,
-      // the CRM gives way to the HR payroll run for the cutoff, its totals count up and the run is approved.
-      const crewPills = q('[data-tour-crew-pill]');
-      const crewInEl = q('[data-tour-crew-in]')[0];
-      const payCounts = q('[data-tour-pay-count]');
-      const runEl = q('[data-tour-run]')[0];
-      const setCrew = (n: number) => {
-        crewPills.forEach((el, i) => { const s = crewPill(crew[i], i < n); el.textContent = s.text; Object.assign(el.style, s.style); });
-        crewInEl.textContent = String(n);
-      };
-      const setPay = (t: number) => payCounts.forEach((el, i) => { el.textContent = payrollStats[i].format(payrollStats[i].value * t); });
-      const setApproved = (on: boolean) => { const s = on ? runState.approved : runState.draft; runEl.textContent = s.text; Object.assign(runEl.style, s.style); };
-      setCrew(0); setPay(0); setApproved(false);
+      /* 6 · HR and payroll: the cutoff calendar flips to the 20th, a whip pan to the payroll run where the crew's
+         rows fly in, the totals add up, the run is approved and the payslips fan out. */
+      tl.addLabel('toPay', 'sync+=2.6')
+        .add(fieldCam({ z: 0.6 }, { duration: 0.7, ease: 'power2.in' }), 'toPay')
+        .to(L.field, { autoAlpha: 0, duration: 0.4 }, 'toPay+=0.3')
+        .to(L.pay, { autoAlpha: 1, duration: 0.4 }, 'toPay+=0.3')
+        .add(payCam({ z: 1 }, { duration: 0.9, ease: 'power3.out' }), 'toPay+=0.3');
+      caption(6, 'toPay+=0.3');
+      const flipNum = one(L.pay, '[data-flip-num]');
+      // Each day flips over: the page turns away, the number changes edge-on, the next page turns in.
+      count(14, 20, v => {
+        const f = v % 1;
+        flipNum.textContent = String(Math.floor(v) + +(f >= 0.5));
+        flipNum.style.transform = `rotateX(${f < 0.5 ? -f * 180 : (1 - f) * 180}deg)`;
+      }, { duration: 1.4 }, 'toPay+=1');
 
-      tl.addLabel('beat4')
-        .to(q('[data-tour-beat="3"]'), { y: -30, opacity: 0, duration: 0.35 }, 'beat4')
-        .fromTo(q('[data-tour-beat="4"]'), { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35 }, 'beat4+=0.15')
-        .fromTo(q('[data-tour-crew]'), { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.4 }, 'beat4+=0.1');
-      const timedIn = { v: 0 };
-      tl.to(timedIn, { v: crew.length, duration: 1.5, ease: 'none', onUpdate: () => setCrew(Math.floor(timedIn.v + 0.001)) }, '>+0.1')
-        .to(q('[data-tour-phone]'), { yPercent: 115, rotate: -5, autoAlpha: 0, duration: 0.6, ease: 'power2.in' }, '>+0.3')
-        .to(q('[data-tour-app]'), { opacity: 0, duration: 0.4 }, '<+0.2')
-        .fromTo(q('[data-tour-payroll]'), { autoAlpha: 0, xPercent: -9, scale: 0.8 }, { autoAlpha: 1, xPercent: 0, scale: 1, duration: 0.8, ease: 'power2.inOut' }, '<')
-        .from(q('[data-tour-pay-row]'), { y: 24, opacity: 0, stagger: 0.07, duration: 0.35 }, '>-0.2');
-      const totals = { v: 0 };
-      tl.to(totals, { v: 1, duration: 0.9, ease: 'power1.out', onUpdate: () => setPay(totals.v) }, '<')
-        .to(q('[data-tour-approve]'), { scale: 0.9, duration: 0.12, yoyo: true, repeat: 1, ease: 'power1.inOut' }, '>+0.2');
-      const approved = { v: 0 };
-      tl.to(approved, { v: 1, duration: 0.2, ease: 'none', onUpdate: () => setApproved(approved.v > 0.5) }, '<+0.12')
-        .to({}, { duration: 0.5 }); // hold on the finished scene before the pin releases
+      const payX = S.W + 120 + S.W / 2;
+      tl.addLabel('toRun', 'toPay+=2.7')
+        .add(payCam({ x: (640 + payX) / 2, z: 0.62 }, { duration: 0.45, ease: 'power2.in' }), 'toRun')
+        .add(payCam({ x: payX, z: 1 }, { duration: 0.55, ease: 'power2.out' }), 'toRun+=0.45')
+        .from(all(L.pay, '[data-pay-row]'), { x: -700, rotate: -6, autoAlpha: 0, stagger: 0.1, duration: 0.55, ease: 'power3.out' }, 'toRun+=0.8');
+      const payCounts = all(L.pay, '[data-pay-count]');
+      count(0, 1, t => payCounts.forEach((el, i) => { el.textContent = S.payrollStats[i].format(S.payrollStats[i].value * t); }), { duration: 1, ease: 'power1.out' }, 'toRun+=1.2');
+      const runEl = one(L.pay, '[data-pay-run]');
+      tl.to(one(L.pay, '[data-pay-approve]'), { scale: 0.88, duration: 0.12, yoyo: true, repeat: 1, ease: 'power1.inOut' }, 'toRun+=2.4');
+      count(0, 1, v => text(runEl, v > 0.5 ? S.runState.approved : S.runState.draft), { duration: 0.2 }, 'toRun+=2.5');
+      tl.from(slips, {
+        x: i => tableAt.x - slipAt[i].x, y: i => tableAt.y - slipAt[i].y,
+        rotate: 0, scale: 0.3, autoAlpha: 0, stagger: 0.08, duration: 0.6, ease: 'back.out(1.4)',
+      }, 'toRun+=2.8');
+
+      /* 7 · Finale: the payroll screen is already a tile; the camera pulls all the way back to the whole system. */
+      tl.addLabel('toFin', 'toRun+=4')
+        .set(L.fin, { autoAlpha: 1 }, 'toFin')
+        .set(L.pay, { autoAlpha: 0 }, 'toFin')
+        .add(finCam(finFit, { duration: 1.8, ease: 'power3.inOut' }), 'toFin')
+        .fromTo(all(L.fin, '[data-fin-line]'), { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.6, stagger: 0.3, ease: 'power1.inOut' }, 'toFin+=1.5')
+        .from(all(L.fin, '[data-fin-label]'), { y: 40, autoAlpha: 0, stagger: 0.12, duration: 0.4 }, 'toFin+=1.3')
+        .to({}, { duration: 0.8 });
+      caption(7, 'toFin+=0.8');
     });
 
     return () => { mm.revert(); ro.disconnect(); };
   }, []);
 
-  const done = journey[last];
-
   return (
-    <section ref={root} id="tour" aria-labelledby="tour-title" className="flex min-h-svh flex-col justify-center overflow-hidden py-10">
+    <section ref={root} id="tour" aria-labelledby="tour-title" className="overflow-hidden">
+      <div data-tour-pin="" className="flex min-h-svh flex-col justify-center py-8">
       <div className="mx-auto w-[calc(100%_-_112px)] max-w-360 max-lg:md:w-[calc(100%_-_64px)] max-md:w-[calc(100%_-_40px)]">
-        {/* Both beats' captions share one grid cell so they can cross over. Without JS only the first shows. */}
-        <h2 id="tour-title" className="mb-8 grid text-[length:clamp(36px,4vw,60px)] max-md:mb-6">
-          <span data-tour-beat="1" className="[grid-area:1/1]">
-            <span className="mb-3 block font-mono text-[11px] font-normal tracking-[0.08em] text-muted">01 · Lampara CRM</span>
-            the whole business, at a glance.
-          </span>
-          <span data-tour-beat="2" className="opacity-0 [grid-area:1/1]">
-            <span className="mb-3 block font-mono text-[11px] font-normal tracking-[0.08em] text-muted">02 · Projects</span>
-            every job, inquiry to install.
-          </span>
-          <span data-tour-beat="3" className="opacity-0 [grid-area:1/1]">
-            <span className="mb-3 block font-mono text-[11px] font-normal tracking-[0.08em] text-muted">03 · On site</span>
-            checked on site, synced to the office.
-          </span>
-          <span data-tour-beat="4" className="opacity-0 [grid-area:1/1]">
-            <span className="mb-3 block font-mono text-[11px] font-normal tracking-[0.08em] text-muted">04 · HR and payroll</span>
-            the crew times in, payroll adds up.
-          </span>
+        {/* All captions share one grid cell and cross over; without JS only the last (finale) one shows. */}
+        <h2 id="tour-title" className="mb-7 grid text-[length:clamp(34px,3.8vw,58px)] max-md:mb-5">
+          {beats.map(([eyebrow, title], i) => (
+            <span key={eyebrow} data-beat="" className={`[grid-area:1/1] ${i === beats.length - 1 ? '' : 'opacity-0'}`}>
+              <span className="mb-3 block font-mono text-[11px] font-normal tracking-[0.08em] text-muted">{eyebrow}</span>
+              {title}
+            </span>
+          ))}
         </h2>
 
-        <div data-tour-frame="" className="relative mx-auto aspect-[16/10] max-h-[68svh] w-full max-w-[min(100%,calc(68svh*1.6))]">
-          {/* Without the scroll animation only the finished scene shows: the payroll run, so the CRM app and phone hide. */}
-          <div data-tour-app="" className="absolute inset-0 overflow-hidden rounded-[10px] border border-line opacity-0 will-change-transform [html.js_&]:motion-safe:opacity-100" style={{ background: c.bg }}>
-            {/* Fixed-size app, scaled to the frame width by --s. */}
-            <div className="absolute top-0 left-0 flex h-[800px] w-[1280px] origin-top-left [transform:scale(var(--s,0.5))]" style={{ color: c.fg, fontFeatureSettings: '"tnum"' }}>
-              <aside data-tour-side="" className="flex w-[232px] shrink-0 flex-col border-r px-2.5 pt-4" style={{ background: c.card, borderColor: c.border }}>
-                <div className="mb-5 flex items-center gap-2.5 px-2">
-                  <span className="grid size-9 place-items-center rounded-[8px] border text-[15px] font-semibold" style={{ borderColor: c.border, background: c.muted }}>L</span>
-                  <span className="leading-tight"><b className="block text-[14px] font-medium">Lampara</b><span className="text-[12px]" style={{ color: c.mutedFg }}>CRM · powered by Lampara</span></span>
-                </div>
-                {nav.map((item, i) => (
-                  <div key={item.label} data-tour-nav="" className="mb-0.5 flex items-center gap-3 rounded-[8px] px-3 py-2 text-[14px]"
-                    style={i === 0 ? { background: c.primary, color: c.primaryFg } : { color: c.mutedFg }}>
-                    <Icon d={item.icon} /> {item.label}
-                  </div>
-                ))}
-              </aside>
-
-              <main className="flex-1 px-7 pt-10">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p data-tour-head="" className="text-[26px] font-semibold tracking-[-0.03em]">Good evening, Olivia</p>
-                    <p data-tour-head="" className="mt-1 text-[14px]" style={{ color: c.mutedFg }}>Here’s what’s happening at Lampara today.</p>
-                  </div>
-                  <span data-tour-head="">
-                    <span data-tour-new-btn="" className="inline-block rounded-[8px] px-4 py-2 text-[13px] font-medium" style={{ background: c.primary, color: c.primaryFg }}>+ New Project</span>
-                  </span>
-                </div>
-
-                <div className="mt-7 grid grid-cols-4 overflow-hidden rounded-[12px] border" style={{ background: c.card, borderColor: c.border }}>
-                  {stats.map((s, i) => (
-                    <div key={s.label} data-tour-stat="" className="px-5 py-5" style={i ? { borderLeft: `1px solid ${c.border}` } : undefined}>
-                      <p data-tour-count="" className="text-[28px] font-semibold tracking-[-0.03em]">{s.now(true, last)}</p>
-                      <p className="mt-1 text-[13px]" style={{ color: c.mutedFg }}>{s.label}</p>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-6 overflow-hidden rounded-[12px] border" style={{ background: c.card, borderColor: c.border }}>
-                  <p className="px-5 py-4 text-[16px] font-medium">Recent Projects</p>
-                  <div data-tour-new="" className="overflow-hidden" style={{ background: 'oklch(1 0 0 / 5%)' }}>
-                    <div className={rowClass} style={{ borderTop: `1px solid ${c.border}` }}>
-                      <span className="leading-tight"><span className="block text-[14px]">Jose Mercado</span><span className="text-[12px]" style={{ color: c.mutedFg }}>Bacoor</span></span>
-                      <span><span data-tour-pill="" className="rounded-full px-2.5 py-1 text-[12px]" style={pill(done.h)}>{done.stage}</span></span>
-                      <span data-tour-activity="" className="text-[13px]" style={{ color: c.mutedFg }}>Checklist synced</span>
-                    </div>
-                  </div>
-                  {projects.map(p => (
-                    <div key={p.name} data-tour-row="" className={rowClass} style={{ borderTop: `1px solid ${c.border}` }}>
-                      <span className="leading-tight"><span className="block text-[14px]">{p.name}</span><span className="text-[12px]" style={{ color: c.mutedFg }}>{p.city}</span></span>
-                      <span><span className="rounded-full px-2.5 py-1 text-[12px]" style={pill(p.h)}>{p.stage}</span></span>
-                      <span className="text-[13px]" style={{ color: c.mutedFg }}>{p.when}</span>
-                    </div>
-                  ))}
-                </div>
-              </main>
-            </div>
-          </div>
-
-          {/* Beat 4: the HR module's payroll run, laid out like the CRM app above. */}
-          <div data-tour-payroll="" className="[html.js_&]:motion-safe:invisible absolute inset-0 overflow-hidden rounded-[10px] border border-line will-change-transform" style={{ background: c.bg }}>
-            <div className="absolute top-0 left-0 flex h-[800px] w-[1280px] origin-top-left [transform:scale(var(--s,0.5))]" style={{ color: c.fg, fontFeatureSettings: '"tnum"' }}>
-              <aside className="flex w-[232px] shrink-0 flex-col border-r px-2.5 pt-4" style={{ background: c.card, borderColor: c.border }}>
-                <div className="mb-5 flex items-center gap-2.5 px-2">
-                  <span className="grid size-9 place-items-center rounded-[8px] border text-[15px] font-semibold" style={{ borderColor: c.border, background: c.muted }}>L</span>
-                  <span className="leading-tight"><b className="block text-[14px] font-medium">Lampara</b><span className="text-[12px]" style={{ color: c.mutedFg }}>HR · powered by Lampara</span></span>
-                </div>
-                {hrNav.map(item => (
-                  <div key={item.label} className="mb-0.5 flex items-center gap-3 rounded-[8px] px-3 py-2 text-[14px]"
-                    style={item.label === 'Payroll' ? { background: c.primary, color: c.primaryFg } : { color: c.mutedFg }}>
-                    <Icon d={item.icon} /> {item.label}
-                  </div>
-                ))}
-              </aside>
-
-              <main className="flex-1 px-7 pt-10">
-                <div className="flex items-center justify-between">
-                  <p className="flex items-center gap-3 text-[24px] font-semibold tracking-[-0.03em]">
-                    <span style={{ color: c.mutedFg }}>‹</span> Payroll · Oct 6 – Oct 20
-                    <span data-tour-run="" className="rounded-full px-2.5 py-1 text-[12px] font-normal tracking-normal" style={runState.approved.style}>{runState.approved.text}</span>
-                  </p>
-                  <span data-tour-approve="" className="inline-block rounded-[8px] px-4 py-2 text-[13px] font-medium" style={{ background: c.primary, color: c.primaryFg }}>Approve</span>
-                </div>
-
-                <div className="mt-6 grid grid-cols-4 gap-3">
-                  {payrollStats.map(s => (
-                    <div key={s.label} className="rounded-[12px] border px-4 py-3.5" style={{ background: c.card, borderColor: c.border }}>
-                      <p className="text-[13px]" style={{ color: c.mutedFg }}>{s.label}</p>
-                      <p data-tour-pay-count="" className="mt-1 font-mono text-[21px]">{s.format(s.value)}</p>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-5 overflow-hidden rounded-[12px] border text-[13px]" style={{ background: c.card, borderColor: c.border }}>
-                  <div className="grid grid-cols-[1.6fr_1fr_.6fr_1.1fr_1.1fr_1.1fr] px-4 py-3 font-medium" style={{ background: c.muted }}>
-                    <span>Employee</span><span className="text-right">Rate</span><span className="text-right">Days</span><span className="text-right">Gross</span><span className="text-right">Deductions</span><span className="text-right">Net</span>
-                  </div>
-                  {crew.map(p => (
-                    <div key={p.name} data-tour-pay-row="" className="grid grid-cols-[1.6fr_1fr_.6fr_1.1fr_1.1fr_1.1fr] px-4 py-3" style={{ borderTop: `1px solid ${c.border}` }}>
-                      <span>{p.name}</span>
-                      <span className="text-right font-mono" style={{ color: c.mutedFg }}>{peso(p.rate)}</span>
-                      <span className="text-right font-mono">{p.days}</span>
-                      <span className="text-right font-mono">{peso(p.rate * p.days)}</span>
-                      <span className="text-right font-mono" style={{ color: c.mutedFg }}>{peso(p.ded)}</span>
-                      <span className="text-right font-mono">{peso(p.rate * p.days - p.ded)}</span>
-                    </div>
-                  ))}
-                </div>
-              </main>
-            </div>
-          </div>
-
-          {/* The field tech's phone: a 330×700 screen in the same scaled units as the app, so it lines up at any width. */}
-          <div data-tour-phone="" className="opacity-0 [html.js_&]:motion-safe:opacity-100 absolute right-[calc(var(--s,0.5)*70px)] top-[calc(var(--s,0.5)*44px)] h-[calc(var(--s,0.5)*712px)] w-[calc(var(--s,0.5)*346px)]">
-            <div className="h-[712px] w-[346px] origin-top-left rounded-[44px] border-[8px] border-[#2a2a2a] bg-[#0b0b0b] p-[3px] shadow-[0_40px_80px_-30px_rgba(0,0,0,.9)] [transform:scale(var(--s,0.5))]">
-              <div className="relative flex h-full flex-col overflow-hidden rounded-[34px] px-5 pt-3" style={{ background: c.bg, color: c.fg, fontFeatureSettings: '"tnum"' }}>
-                <div className="flex items-center justify-between px-2 text-[12px] font-medium">
-                  <span>4:12</span>
-                  <span className="h-[22px] w-[86px] rounded-full bg-[#000]" />
-                  <span style={{ color: c.mutedFg }}>4G</span>
-                </div>
-                <p className="mt-5 text-[12px]" style={{ color: c.mutedFg }}>← Jose Mercado · Bacoor</p>
-                <p className="mt-1 text-[20px] font-semibold tracking-[-0.02em]">QA/QC Checklist</p>
-                <p className="mt-1 text-[12px]" style={{ color: c.mutedFg }}><span data-tour-answered="">{TOTAL_ITEMS}</span> of {TOTAL_ITEMS} items answered</p>
-                <div className="mt-2.5 h-1 overflow-hidden rounded-full" style={{ background: c.muted }}>
-                  <div data-tour-bar="" className="h-full w-full rounded-full" style={{ background: hue.success }} />
-                </div>
-
-                <div className="mt-4 overflow-hidden rounded-[12px] border" style={{ background: c.card, borderColor: c.border }}>
-                  {checklist.map(([en, tl], i) => (
-                    <div key={en} data-tour-check="" data-on="true" className="group flex gap-3 px-3.5 py-3" style={i ? { borderTop: `1px solid ${c.border}` } : undefined}>
-                      <span className="relative mt-0.5 grid size-[18px] shrink-0 place-items-center rounded-full border border-dashed group-data-[on=true]:border-solid" style={{ borderColor: c.mutedFg }}>
-                        <span className="absolute inset-[-1px] grid place-items-center rounded-full opacity-0 transition-opacity duration-150 group-data-[on=true]:opacity-100" style={{ background: hue.success, color: c.bg }}>
-                          <Icon d="M5 12l5 5L20 7" className="size-[12px]" />
-                        </span>
-                      </span>
-                      <span className="leading-tight">
-                        <span className="block text-[13px]">{en}</span>
-                        <span className="text-[11px]" style={{ color: c.mutedFg }}>{tl}</span>
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                <span data-tour-sync="" className="mx-auto mt-auto mb-6 rounded-full px-3 py-1.5 text-[12px]" style={sync.synced.style}>{sync.synced.text}</span>
-
-                {/* Beat 4: the crew's attendance, layered over the checklist below the status bar. */}
-                <div data-tour-crew="" className="absolute inset-x-0 top-[40px] bottom-0 px-5" style={{ background: c.bg }}>
-                  <p className="mt-4 text-[12px]" style={{ color: c.mutedFg }}>Today · Regular 07:00–16:00</p>
-                  <p className="mt-1 text-[18px] font-semibold leading-tight tracking-[-0.02em]">Jose Mercado — Bacoor</p>
-                  <p className="mt-1 text-[12px]" style={{ color: c.mutedFg }}>You’re the leadman · Install, day 1 of 2</p>
-                  <div className="mt-4 overflow-hidden rounded-[12px] border" style={{ background: c.card, borderColor: c.border }}>
-                    <p className="px-3.5 py-3 text-[13px] font-medium">Your crew · <span data-tour-crew-in="">{crew.length}</span> of {crew.length} in</p>
-                    {crew.map(p => {
-                      const s = crewPill(p, true);
-                      return (
-                        <div key={p.name} className="flex items-center justify-between gap-2 px-3.5 py-2.5" style={{ borderTop: `1px solid ${c.border}` }}>
-                          <span className="text-[13px]">{p.name}</span>
-                          <span data-tour-crew-pill="" className="shrink-0 rounded-full px-2 py-0.5 text-[10.5px]" style={s.style}>{s.text}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </div>
+        <div data-tour-frame="" className="relative mx-auto aspect-[16/10] max-h-[70svh] w-full max-w-[min(100%,calc(70svh*1.6))] overflow-hidden rounded-[12px] border border-line" style={{ background: S.c.bg }}>
+          <div className="absolute top-0 left-0 h-[800px] w-[1280px] origin-top-left [transform:scale(var(--s,0.5))]">
+            <Layer name="chat"><S.ChatScreen /></Layer>
+            <Layer name="dash"><S.DashboardScreen /></Layer>
+            <Layer name="pipe" w={S.PIPE.width}><S.PipelineScreen /></Layer>
+            <Layer name="quote"><S.QuoteScreen /></Layer>
+            <Layer name="prep" w={2 * (S.W + 120) + S.MAP_W}>
+              <div className="absolute top-0 left-0"><S.CalendarScreen /></div>
+              <div className="absolute top-0" style={{ left: S.W + 120 }}><S.WarehouseScreen /></div>
+              <div className="absolute top-0" style={{ left: 2 * (S.W + 120) }}><S.MapScreen /></div>
+            </Layer>
+            <Layer name="field"><S.FieldScreen /></Layer>
+            <Layer name="pay" w={2 * S.W + 120}>
+              <div className="absolute top-0 left-0"><S.FlipScreen /></div>
+              <div className="absolute top-0" style={{ left: S.W + 120 }}><S.PayrollScreen /></div>
+            </Layer>
+            <Layer name="fin" w={S.FIN.w} h={S.FIN.h} cam={finFit}><S.FinaleWorld /></Layer>
           </div>
         </div>
-        <p className="pt-3.5 font-mono text-[10px] text-muted">Rebuilt from Lampara’s CRM and HR screens · Demo data</p>
+        <p className="pt-3.5 font-mono text-[10px] text-muted">Rebuilt from Lampara’s CRM, Warehouse and HR screens · Demo data</p>
+      </div>
       </div>
     </section>
   );
