@@ -63,7 +63,23 @@ const projects = [
   { name: 'Ricardo Bautista', city: 'Lipa City', stage: 'Active Customer', h: hue.success, when: '25d ago' },
 ];
 
-const rowClass = 'grid grid-cols-[1.3fr_1fr_auto] items-center px-5 py-3';
+// Beat 3: the last items of the CRM's QA/QC checklist, as the field tech ticks them on site.
+const checklist = [
+  ['Inverter powered on successfully', 'Matagumpay na na-power on ang inverter'],
+  ['No fault or alarm displayed', 'Walang fault o alarm na ipinapakita'],
+  ['Monitoring system connected', 'Nakakonekta ang monitoring system'],
+  ['Voltage and current checked', 'Nasuri ang boltahe at kuryente'],
+  ['Final cleaning completed', 'Nakumpleto ang huling paglilinis'],
+  ['Photos taken for documentation', 'Kumuha ng mga larawan para sa dokumentasyon'],
+];
+const TOTAL_ITEMS = 43;
+const answered = (ticked: number) => TOTAL_ITEMS - checklist.length + ticked;
+const sync = {
+  offline: { text: 'Offline · saved on this phone', style: pill(hue.warning) },
+  synced: { text: 'Synced to the office', style: pill(hue.success) },
+};
+
+const rowClass ='grid grid-cols-[1.3fr_1fr_auto] items-center px-5 py-3';
 
 function Icon({ d, className = 'size-[18px]' }: { d: string; className?: string }) {
   return (
@@ -94,7 +110,7 @@ export default function LamparaTour() {
 
       const tl = gsap.timeline({
         defaults: { ease: 'power2.out' },
-        scrollTrigger: { trigger: section, start: 'top top', end: '+=360%', pin: true, scrub: 0.6 },
+        scrollTrigger: { trigger: section, start: 'top top', end: '+=520%', pin: true, scrub: 0.6 },
       });
 
       // Beat 1
@@ -130,7 +146,44 @@ export default function LamparaTour() {
         onUpdate: () => { const s = Math.round(step.v); setStage(s); setStats(true, s); },
       }, '>+0.15')
         .to(q('[data-tour-new]'), { backgroundColor: 'oklch(1 0 0 / 0%)', duration: 0.4 })
-        .to({}, { duration: 0.4 }); // hold on the finished dashboard before the pin releases
+        .to({}, { duration: 0.3 });
+
+      // Beat 3: the dashboard steps back to the left and dims, the field tech's phone slides up beside it,
+      // the checklist ticks off, then the offline report syncs and the dashboard row picks it up.
+      const checks = q('[data-tour-check]');
+      const countEl = q('[data-tour-answered]')[0];
+      const barEl = q('[data-tour-bar]')[0];
+      const syncEl = q('[data-tour-sync]')[0];
+      const activityEl = q('[data-tour-activity]')[0];
+      const setChecks = (n: number) => {
+        checks.forEach((el, i) => { el.dataset.on = String(i < n); });
+        countEl.textContent = String(answered(n));
+        barEl.style.width = `${(answered(n) / TOTAL_ITEMS) * 100}%`;
+      };
+      const setSynced = (on: boolean) => {
+        const s = on ? sync.synced : sync.offline;
+        syncEl.textContent = s.text; Object.assign(syncEl.style, s.style);
+        activityEl.textContent = on ? 'Checklist synced' : 'just now';
+      };
+      setChecks(0); setSynced(false); // the markup holds the finished state for no-JS; start from the top here
+
+      tl.addLabel('beat3')
+        .to(q('[data-tour-beat="2"]'), { y: -30, opacity: 0, duration: 0.35 }, 'beat3')
+        .fromTo(q('[data-tour-beat="3"]'), { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35 }, 'beat3+=0.15')
+        .to(q('[data-tour-app]'), { xPercent: -9, scale: 0.8, opacity: 0.55, duration: 0.7, ease: 'power2.inOut' }, 'beat3')
+        .fromTo(q('[data-tour-phone]'), { yPercent: 115, rotate: 6 }, {
+          yPercent: 0, rotate: 0, duration: 0.7, ease: 'power3.out',
+          onStart: () => { setChecks(0); setSynced(false); },
+        }, 'beat3+=0.25');
+      const ticked = { v: 0 };
+      tl.to(ticked, { v: checklist.length, duration: 1.8, ease: 'none', onUpdate: () => setChecks(Math.floor(ticked.v + 0.001)) }, '>+0.1');
+      const synced = { v: 0 };
+      tl.to(synced, { v: 1, duration: 0.4, ease: 'none', onUpdate: () => setSynced(synced.v > 0.5) }, '>+0.2')
+        // The phone covers the row's activity column, so the sync shows as a green flash on the whole row.
+        // rgba, not color-mix(): GSAP can only interpolate plain colours (this is the success hue in sRGB).
+        .fromTo(q('[data-tour-new]'), { backgroundColor: 'rgba(48,168,96,0)' }, { backgroundColor: 'rgba(48,168,96,0.2)', duration: 0.25 }, '<+0.2')
+        .to(q('[data-tour-new]'), { backgroundColor: 'rgba(48,168,96,0)', duration: 0.4 })
+        .to({}, { duration: 0.5 }); // hold on the finished scene before the pin releases
     });
 
     return () => { mm.revert(); ro.disconnect(); };
@@ -151,10 +204,15 @@ export default function LamparaTour() {
             <span className="mb-3 block font-mono text-[11px] font-normal tracking-[0.08em] text-muted">02 · Projects</span>
             every job, inquiry to install.
           </span>
+          <span data-tour-beat="3" className="opacity-0 [grid-area:1/1]">
+            <span className="mb-3 block font-mono text-[11px] font-normal tracking-[0.08em] text-muted">03 · On site</span>
+            checked on site, synced to the office.
+          </span>
         </h2>
 
         <div data-tour-frame="" className="relative mx-auto aspect-[16/10] max-h-[68svh] w-full max-w-[min(100%,calc(68svh*1.6))]">
-          <div data-tour-app="" className="absolute inset-0 overflow-hidden rounded-[10px] border border-line will-change-transform" style={{ background: c.bg }}>
+          {/* Without the scroll animation the app sits in its beat-3 place (stepped back, beside the phone). */}
+          <div data-tour-app="" className="absolute inset-0 overflow-hidden rounded-[10px] border border-line opacity-55 will-change-transform [transform:translateX(-9%)_scale(.8)] [html.js_&]:motion-safe:opacity-100 [html.js_&]:motion-safe:[transform:none]" style={{ background: c.bg }}>
             {/* Fixed-size app, scaled to the frame width by --s. */}
             <div className="absolute top-0 left-0 flex h-[800px] w-[1280px] origin-top-left [transform:scale(var(--s,0.5))]" style={{ color: c.fg, fontFeatureSettings: '"tnum"' }}>
               <aside data-tour-side="" className="flex w-[232px] shrink-0 flex-col border-r px-2.5 pt-4" style={{ background: c.card, borderColor: c.border }}>
@@ -196,7 +254,7 @@ export default function LamparaTour() {
                     <div className={rowClass} style={{ borderTop: `1px solid ${c.border}` }}>
                       <span className="leading-tight"><span className="block text-[14px]">Jose Mercado</span><span className="text-[12px]" style={{ color: c.mutedFg }}>Bacoor</span></span>
                       <span><span data-tour-pill="" className="rounded-full px-2.5 py-1 text-[12px]" style={pill(done.h)}>{done.stage}</span></span>
-                      <span className="text-[13px]" style={{ color: c.mutedFg }}>just now</span>
+                      <span data-tour-activity="" className="text-[13px]" style={{ color: c.mutedFg }}>Checklist synced</span>
                     </div>
                   </div>
                   {projects.map(p => (
@@ -208,6 +266,43 @@ export default function LamparaTour() {
                   ))}
                 </div>
               </main>
+            </div>
+          </div>
+
+          {/* The field tech's phone: a 330×700 screen in the same scaled units as the app, so it lines up at any width. */}
+          <div data-tour-phone="" className="absolute right-[calc(var(--s,0.5)*70px)] top-[calc(var(--s,0.5)*44px)] h-[calc(var(--s,0.5)*712px)] w-[calc(var(--s,0.5)*346px)]">
+            <div className="h-[712px] w-[346px] origin-top-left rounded-[44px] border-[8px] border-[#2a2a2a] bg-[#0b0b0b] p-[3px] shadow-[0_40px_80px_-30px_rgba(0,0,0,.9)] [transform:scale(var(--s,0.5))]">
+              <div className="relative flex h-full flex-col overflow-hidden rounded-[34px] px-5 pt-3" style={{ background: c.bg, color: c.fg, fontFeatureSettings: '"tnum"' }}>
+                <div className="flex items-center justify-between px-2 text-[12px] font-medium">
+                  <span>4:12</span>
+                  <span className="h-[22px] w-[86px] rounded-full bg-[#000]" />
+                  <span style={{ color: c.mutedFg }}>4G</span>
+                </div>
+                <p className="mt-5 text-[12px]" style={{ color: c.mutedFg }}>← Jose Mercado · Bacoor</p>
+                <p className="mt-1 text-[20px] font-semibold tracking-[-0.02em]">QA/QC Checklist</p>
+                <p className="mt-1 text-[12px]" style={{ color: c.mutedFg }}><span data-tour-answered="">{TOTAL_ITEMS}</span> of {TOTAL_ITEMS} items answered</p>
+                <div className="mt-2.5 h-1 overflow-hidden rounded-full" style={{ background: c.muted }}>
+                  <div data-tour-bar="" className="h-full w-full rounded-full" style={{ background: hue.success }} />
+                </div>
+
+                <div className="mt-4 overflow-hidden rounded-[12px] border" style={{ background: c.card, borderColor: c.border }}>
+                  {checklist.map(([en, tl], i) => (
+                    <div key={en} data-tour-check="" data-on="true" className="group flex gap-3 px-3.5 py-3" style={i ? { borderTop: `1px solid ${c.border}` } : undefined}>
+                      <span className="relative mt-0.5 grid size-[18px] shrink-0 place-items-center rounded-full border border-dashed group-data-[on=true]:border-solid" style={{ borderColor: c.mutedFg }}>
+                        <span className="absolute inset-[-1px] grid place-items-center rounded-full opacity-0 transition-opacity duration-150 group-data-[on=true]:opacity-100" style={{ background: hue.success, color: c.bg }}>
+                          <Icon d="M5 12l5 5L20 7" className="size-[12px]" />
+                        </span>
+                      </span>
+                      <span className="leading-tight">
+                        <span className="block text-[13px]">{en}</span>
+                        <span className="text-[11px]" style={{ color: c.mutedFg }}>{tl}</span>
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                <span data-tour-sync="" className="mx-auto mt-auto mb-6 rounded-full px-3 py-1.5 text-[12px]" style={sync.synced.style}>{sync.synced.text}</span>
+              </div>
             </div>
           </div>
         </div>
