@@ -32,14 +32,15 @@ function camera(el: HTMLElement, start: Cam) {
 
 const centre = { x: S.W / 2, y: S.H / 2, z: 1 };
 
+// The step list beside the stage: one entry per beat, the playing one bright with its bar filling.
 const beats = [
-  ['01 · Inquiry', 'it starts with a message.'],
-  ['02 · CRM', 'every lead lands in one place.'],
-  ['03 · Sales', 'quoted, signed, moving.'],
-  ['04 · Schedule and warehouse', 'booked, picked, on the road.'],
-  ['05 · On site', 'checked on site, synced to the office.'],
-  ['06 · HR and payroll', 'attendance in, payroll out.'],
-  ['07 · Recap', 'the whole job, in one place.'],
+  ['A message comes in', 'Jose asks about solar on Messenger, and the reply becomes a project.'],
+  ['Every lead in one place', 'The CRM dashboard counts him in next to every other job.'],
+  ['Quoted, signed, moving', 'His card rides the pipeline while the quote is built, signed and stamped.'],
+  ['Booked, picked, on the road', 'Install day on the calendar, stock picked into the van, route to Bacoor.'],
+  ['Checked on site', 'The crew times in, and the checklist and photos sync back to the office.'],
+  ['Attendance in, payroll out', 'The cutoff closes, payroll adds itself up and the payslips go out.'],
+  ['The whole job, in one place', 'One system from the first message to payday.'],
 ];
 
 function Layer({ name, w = S.W, h = S.H, cam, children }: { name: string; w?: number; h?: number; cam?: Cam; children: ReactNode }) {
@@ -106,9 +107,6 @@ export default function LamparaTour() {
       text(one(L.pay, '[data-pay-run]'), S.runState.draft);
       all(L.fin, '[data-r-count]').forEach((el, i) => { el.textContent = S.recap[i].format(0); });
 
-      const caps = all(section, '[data-beat]');
-      gsap.set(caps, { autoAlpha: 0 });
-      gsap.set(caps[0], { autoAlpha: 1 });
       gsap.set(Object.values(L), { autoAlpha: 0 });
       gsap.set(L.chat, { autoAlpha: 1 });
 
@@ -125,14 +123,10 @@ export default function LamparaTour() {
         defaults: { ease: 'power2.out' },
         // Pin the inner wrapper, not the <section>: the pin-spacer GSAP wraps around the pinned node must stay
         // inside a node React owns, or React can't remove the section when the page unmounts.
-        scrollTrigger: { trigger: pinEl, start: 'top top', end: '+=1900%', pin: true, scrub: 0.8 },
+        scrollTrigger: { trigger: pinEl, start: 'top top', end: '+=1900%', pin: true, scrub: 0.8, invalidateOnRefresh: true },
       });
-      const beatStarts = [0]; // timeline time each beat's caption comes in, for the progress bar
-      const caption = (n: number, at: string) => {
-        tl.to(caps[n - 2], { y: -30, autoAlpha: 0, duration: 0.35 }, at)
-          .fromTo(caps[n - 1], { y: 30, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.35 }, `${at}+=0.15`);
-        beatStarts[n - 1] = (tl.recent() as gsap.core.Tween).startTime();
-      };
+      const beatStarts = [0]; // timeline time each beat starts, for the step list
+      const caption = (n: number, at: string) => { beatStarts[n - 1] = tl.addLabel(`beat${n}`, at).labels[`beat${n}`]; };
       // A scrubbed counter: tweens 0→1 (or a → b) and hands the value to `set` on every frame, both directions.
       const count = (from: number, to: number, set: (v: number) => void, vars: gsap.TweenVars, at: string) => {
         const o = { v: from };
@@ -156,6 +150,26 @@ export default function LamparaTour() {
         .to(L.dash, { autoAlpha: 1, duration: 0.3 }, 'toDash+=0.4')
         .to(one(L.dash, '[data-dash-btn]'), { scale: 1.18, duration: 0.12, yoyo: true, repeat: 1, ease: 'power1.inOut' }, 'toDash+=0.8')
         .add(dashCam({ x: 640, y: 400, z: 1 }, { duration: 1.3, ease: 'power3.inOut' }), 'toDash+=1');
+
+      // The chat plays full screen: the stage starts scaled up to cover the whole pinned view and settles into its
+      // column as the dashboard pulls back, with the step list sliding in beside it. Measured from layout offsets
+      // (not the transformed box), and re-measured on every ScrollTrigger refresh.
+      const stageCol = frame.parentElement!;
+      const steps = one(section, '[data-tour-steps]');
+      const full = () => {
+        const p = pinEl.getBoundingClientRect(), col = stageCol.getBoundingClientRect(), w = frame.offsetWidth, h = frame.offsetHeight;
+        return {
+          x: p.left + p.width / 2 - (col.left + frame.offsetLeft + w / 2),
+          y: p.top + p.height / 2 - (col.top + frame.offsetTop + h / 2),
+          // Cover the view, but never zoom past the point where the chat window (≈47% of the stage) fills the width:
+          // on a portrait phone, covering the height would crop the chat off both sides.
+          scale: Math.min(Math.max(p.width / w, p.height / h), p.width / (w * 0.47)),
+        };
+      };
+      tl.fromTo(frame,
+        { x: () => full().x, y: () => full().y, scale: () => full().scale, borderRadius: 0, borderColor: 'rgba(54,54,51,0)' },
+        { x: 0, y: 0, scale: 1, borderRadius: 12, borderColor: 'rgba(54,54,51,1)', duration: 1.4, ease: 'power3.inOut', immediateRender: true }, 'toDash+=0.9')
+        .fromTo(steps, { autoAlpha: 0, x: -60 }, { autoAlpha: 1, x: 0, duration: 0.8, immediateRender: true }, 'toDash+=1.5');
 
       /* 2 · CRM: stats count up, rows rise, Jose's row drops in on top, then the camera dives into it. */
       caption(2, 'toDash+=1');
@@ -362,14 +376,16 @@ export default function LamparaTour() {
         .to({}, { duration: 0.8 });
       caption(7, 'toFin+=0.5');
 
-      // Progress bar: one segment per beat, each filling across its own beat's stretch of the timeline.
-      const fills = all(section, '[data-progress-fill]');
-      const setBar = (time: number) => fills.forEach((el, i) => {
+      // Step list: the beat playing is active, and its bar fills across that beat's stretch of the timeline.
+      const stepEls = all(section, '[data-step]');
+      const fills = all(section, '[data-step-fill]');
+      const setSteps = (time: number) => stepEls.forEach((el, i) => {
         const end = beatStarts[i + 1] ?? tl.duration();
-        el.style.transform = `scaleX(${gsap.utils.clamp(0, 1, (time - beatStarts[i]) / (end - beatStarts[i]))})`;
+        el.dataset.active = String(time >= beatStarts[i] && (time < end || i === stepEls.length - 1));
+        fills[i].style.transform = `scaleY(${gsap.utils.clamp(0, 1, (time - beatStarts[i]) / (end - beatStarts[i]))})`;
       });
-      tl.eventCallback('onUpdate', () => setBar(tl.time()));
-      setBar(0);
+      tl.eventCallback('onUpdate', () => setSteps(tl.time()));
+      setSteps(0);
     });
 
     return () => { mm.revert(); ro.disconnect(); };
@@ -377,19 +393,28 @@ export default function LamparaTour() {
 
   return (
     <section ref={root} id="tour" aria-labelledby="tour-title" className="overflow-hidden">
-      <div data-tour-pin="" className="flex min-h-svh flex-col justify-center py-8">
-      <div className="mx-auto w-[calc(100%_-_112px)] max-w-360 max-lg:md:w-[calc(100%_-_64px)] max-md:w-[calc(100%_-_40px)]">
-        {/* All captions share one grid cell and cross over; without JS only the last (finale) one shows. */}
-        <h2 id="tour-title" className="mb-7 grid text-[length:clamp(34px,3.8vw,58px)] max-md:mb-5">
-          {beats.map(([eyebrow, title], i) => (
-            <span key={eyebrow} data-beat="" className={`[grid-area:1/1] ${i === beats.length - 1 ? '' : 'opacity-0'}`}>
-              <span className="mb-3 block font-mono text-[11px] font-normal tracking-[0.08em] text-muted">{eyebrow}</span>
-              {title}
-            </span>
-          ))}
-        </h2>
+      <div data-tour-pin="" className="flex min-h-svh items-center py-8">
+      <div className="mx-auto grid w-[calc(100%_-_112px)] max-w-360 grid-cols-[minmax(0,30%)_minmax(0,1fr)] items-center gap-12 max-lg:grid-cols-1 max-lg:gap-6 max-lg:md:w-[calc(100%_-_64px)] max-md:w-[calc(100%_-_40px)]">
+        {/* Steps beside the stage. Below lg they share one grid cell so only the active one shows, above the stage.
+            Without JS every step shows, with the last one marked active. */}
+        <div data-tour-steps="">
+          <h2 id="tour-title" className="sr-only">How Lampara runs a job, from first message to payday</h2>
+          <ol className="m-0 grid list-none p-0">
+            {beats.map(([title, desc], i) => (
+              <li key={title} data-step="" data-active={i === beats.length - 1}
+                className="relative py-3.5 pl-6 transition-opacity duration-300 data-[active=false]:opacity-35 max-lg:[grid-area:1/1] max-lg:py-0 max-lg:data-[active=false]:opacity-0">
+                <span className="absolute inset-y-0 left-0 w-[2px] overflow-hidden bg-line max-lg:hidden">
+                  <span data-step-fill="" className="block h-full w-full origin-top bg-cream" style={{ transform: `scaleY(${+(i === beats.length - 1)})` }} />
+                </span>
+                <p className="text-[length:clamp(20px,1.7vw,26px)] leading-tight font-medium tracking-[-0.03em]">{title}</p>
+                <p className="mt-1.5 text-[length:clamp(15px,1.2vw,17px)] leading-snug text-muted">{desc}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
 
-        <div data-tour-frame="" className="relative mx-auto aspect-[16/10] max-h-[70svh] w-full max-w-[min(100%,calc(70svh*1.6))] overflow-hidden rounded-[12px] border border-line" style={{ background: S.c.bg }}>
+        <div className="relative">
+        <div data-tour-frame="" className="relative z-10 mx-auto aspect-[16/10] max-h-[80svh] w-full max-w-[min(100%,calc(80svh*1.6))] overflow-hidden rounded-[12px] border border-line" style={{ background: S.c.bg }}>
           <div className="absolute top-0 left-0 h-[800px] w-[1280px] origin-top-left [transform:scale(var(--s,0.5))]">
             <Layer name="chat"><S.ChatScreen /></Layer>
             <Layer name="dash"><S.DashboardScreen /></Layer>
@@ -408,15 +433,8 @@ export default function LamparaTour() {
             <Layer name="fin" cam={centre}><S.RecapScreen /></Layer>
           </div>
         </div>
-        {/* Tour progress, one segment per beat (only when the tour animates). */}
-        <div className="mx-auto mt-4 hidden max-w-[min(100%,calc(70svh*1.6))] gap-1.5 [html.js_&]:motion-safe:flex" aria-hidden="true">
-          {beats.map(([eyebrow]) => (
-            <div key={eyebrow} className="h-[3px] flex-1 overflow-hidden rounded-full bg-line">
-              <div data-progress-fill="" className="h-full origin-left bg-cream" style={{ transform: 'scaleX(0)' }} />
-            </div>
-          ))}
-        </div>
         <p className="pt-3.5 font-mono text-[10px] text-muted">Rebuilt from Lampara’s CRM, Warehouse and HR screens · Demo data</p>
+        </div>
       </div>
       </div>
     </section>
