@@ -79,7 +79,41 @@ const sync = {
   synced: { text: 'Synced to the office', style: pill(hue.success) },
 };
 
-const rowClass ='grid grid-cols-[1.3fr_1fr_auto] items-center px-5 py-3';
+// Beat 4: the same crew times in on the phone, then the HR module's payroll run for the cutoff.
+// Names, rates and deductions are from the HR demo data; gross = rate × days.
+const crew = [
+  { name: 'Engineer, Erwin', time: 'In 6:56 AM', rate: 950, days: 10, ded: 497.52 },
+  { name: 'Bautista, Kevin', time: 'In 7:06 AM · 6 min late', late: true, rate: 600, days: 10, ded: 340 },
+  { name: 'Cruz, Paolo', time: 'In 6:58 AM', rate: 650, days: 10, ded: 1357.4 },
+  { name: 'Dizon, Mark', time: 'In 6:59 AM', rate: 650, days: 9, ded: 857.4 },
+  { name: 'Lopez, Ryan', time: 'In 7:00 AM', rate: 700, days: 10, ded: 550.2 },
+  { name: 'Ramos, Jayson', time: 'In 7:02 AM', rate: 620, days: 10, ded: 255.96 },
+];
+const gross = crew.reduce((sum, p) => sum + p.rate * p.days, 0);
+const deductions = crew.reduce((sum, p) => sum + p.ded, 0);
+const peso = (n: number) => '₱' + n.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const payrollStats = [
+  { label: 'Employees', value: crew.length, format: (n: number) => String(Math.round(n)) },
+  { label: 'Gross', value: gross, format: peso },
+  { label: 'Deductions', value: deductions, format: peso },
+  { label: 'Net pay', value: gross - deductions, format: peso },
+];
+const crewPill = (p: (typeof crew)[number], isIn: boolean) =>
+  isIn ? { text: `✓ ${p.time}`, style: pill(p.late ? hue.warning : hue.success) } : { text: '× Not in', style: pill(hue.danger) };
+const runState = {
+  draft: { text: 'Draft', style: pill(hue.warning) },
+  approved: { text: 'Approved', style: pill(hue.success) },
+};
+const hrNav = [
+  { label: 'Today', icon: nav[0].icon },
+  { label: 'Approvals', icon: nav[2].icon },
+  { label: 'Manpower', icon: nav[1].icon },
+  { label: 'Timesheet', icon: nav[3].icon },
+  { label: 'Payroll', icon: 'M2 6h20v12H2zM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6M6 12h.01M18 12h.01' },
+  { label: 'Employees', icon: nav[5].icon },
+];
+
+const rowClass = 'grid grid-cols-[1.3fr_1fr_auto] items-center px-5 py-3';
 
 function Icon({ d, className = 'size-[18px]' }: { d: string; className?: string }) {
   return (
@@ -110,7 +144,7 @@ export default function LamparaTour() {
 
       const tl = gsap.timeline({
         defaults: { ease: 'power2.out' },
-        scrollTrigger: { trigger: section, start: 'top top', end: '+=520%', pin: true, scrub: 0.6 },
+        scrollTrigger: { trigger: section, start: 'top top', end: '+=720%', pin: true, scrub: 0.6 },
       });
 
       // Beat 1
@@ -183,6 +217,37 @@ export default function LamparaTour() {
         // rgba, not color-mix(): GSAP can only interpolate plain colours (this is the success hue in sRGB).
         .fromTo(q('[data-tour-new]'), { backgroundColor: 'rgba(48,168,96,0)' }, { backgroundColor: 'rgba(48,168,96,0.2)', duration: 0.25 }, '<+0.2')
         .to(q('[data-tour-new]'), { backgroundColor: 'rgba(48,168,96,0)', duration: 0.4 })
+        .to({}, { duration: 0.3 });
+
+      // Beat 4: the phone switches to the crew's attendance and they time in one by one; then the phone leaves,
+      // the CRM gives way to the HR payroll run for the cutoff, its totals count up and the run is approved.
+      const crewPills = q('[data-tour-crew-pill]');
+      const crewInEl = q('[data-tour-crew-in]')[0];
+      const payCounts = q('[data-tour-pay-count]');
+      const runEl = q('[data-tour-run]')[0];
+      const setCrew = (n: number) => {
+        crewPills.forEach((el, i) => { const s = crewPill(crew[i], i < n); el.textContent = s.text; Object.assign(el.style, s.style); });
+        crewInEl.textContent = String(n);
+      };
+      const setPay = (t: number) => payCounts.forEach((el, i) => { el.textContent = payrollStats[i].format(payrollStats[i].value * t); });
+      const setApproved = (on: boolean) => { const s = on ? runState.approved : runState.draft; runEl.textContent = s.text; Object.assign(runEl.style, s.style); };
+      setCrew(0); setPay(0); setApproved(false);
+
+      tl.addLabel('beat4')
+        .to(q('[data-tour-beat="3"]'), { y: -30, opacity: 0, duration: 0.35 }, 'beat4')
+        .fromTo(q('[data-tour-beat="4"]'), { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.35 }, 'beat4+=0.15')
+        .fromTo(q('[data-tour-crew]'), { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: 0.4 }, 'beat4+=0.1');
+      const timedIn = { v: 0 };
+      tl.to(timedIn, { v: crew.length, duration: 1.5, ease: 'none', onUpdate: () => setCrew(Math.floor(timedIn.v + 0.001)) }, '>+0.1')
+        .to(q('[data-tour-phone]'), { yPercent: 115, rotate: -5, autoAlpha: 0, duration: 0.6, ease: 'power2.in' }, '>+0.3')
+        .to(q('[data-tour-app]'), { opacity: 0, duration: 0.4 }, '<+0.2')
+        .fromTo(q('[data-tour-payroll]'), { autoAlpha: 0, xPercent: -9, scale: 0.8 }, { autoAlpha: 1, xPercent: 0, scale: 1, duration: 0.8, ease: 'power2.inOut' }, '<')
+        .from(q('[data-tour-pay-row]'), { y: 24, opacity: 0, stagger: 0.07, duration: 0.35 }, '>-0.2');
+      const totals = { v: 0 };
+      tl.to(totals, { v: 1, duration: 0.9, ease: 'power1.out', onUpdate: () => setPay(totals.v) }, '<')
+        .to(q('[data-tour-approve]'), { scale: 0.9, duration: 0.12, yoyo: true, repeat: 1, ease: 'power1.inOut' }, '>+0.2');
+      const approved = { v: 0 };
+      tl.to(approved, { v: 1, duration: 0.2, ease: 'none', onUpdate: () => setApproved(approved.v > 0.5) }, '<+0.12')
         .to({}, { duration: 0.5 }); // hold on the finished scene before the pin releases
     });
 
@@ -208,11 +273,15 @@ export default function LamparaTour() {
             <span className="mb-3 block font-mono text-[11px] font-normal tracking-[0.08em] text-muted">03 · On site</span>
             checked on site, synced to the office.
           </span>
+          <span data-tour-beat="4" className="opacity-0 [grid-area:1/1]">
+            <span className="mb-3 block font-mono text-[11px] font-normal tracking-[0.08em] text-muted">04 · HR and payroll</span>
+            the crew times in, payroll adds up.
+          </span>
         </h2>
 
         <div data-tour-frame="" className="relative mx-auto aspect-[16/10] max-h-[68svh] w-full max-w-[min(100%,calc(68svh*1.6))]">
-          {/* Without the scroll animation the app sits in its beat-3 place (stepped back, beside the phone). */}
-          <div data-tour-app="" className="absolute inset-0 overflow-hidden rounded-[10px] border border-line opacity-55 will-change-transform [transform:translateX(-9%)_scale(.8)] [html.js_&]:motion-safe:opacity-100 [html.js_&]:motion-safe:[transform:none]" style={{ background: c.bg }}>
+          {/* Without the scroll animation only the finished scene shows: the payroll run, so the CRM app and phone hide. */}
+          <div data-tour-app="" className="absolute inset-0 overflow-hidden rounded-[10px] border border-line opacity-0 will-change-transform [html.js_&]:motion-safe:opacity-100" style={{ background: c.bg }}>
             {/* Fixed-size app, scaled to the frame width by --s. */}
             <div className="absolute top-0 left-0 flex h-[800px] w-[1280px] origin-top-left [transform:scale(var(--s,0.5))]" style={{ color: c.fg, fontFeatureSettings: '"tnum"' }}>
               <aside data-tour-side="" className="flex w-[232px] shrink-0 flex-col border-r px-2.5 pt-4" style={{ background: c.card, borderColor: c.border }}>
@@ -269,8 +338,61 @@ export default function LamparaTour() {
             </div>
           </div>
 
+          {/* Beat 4: the HR module's payroll run, laid out like the CRM app above. */}
+          <div data-tour-payroll="" className="[html.js_&]:motion-safe:invisible absolute inset-0 overflow-hidden rounded-[10px] border border-line will-change-transform" style={{ background: c.bg }}>
+            <div className="absolute top-0 left-0 flex h-[800px] w-[1280px] origin-top-left [transform:scale(var(--s,0.5))]" style={{ color: c.fg, fontFeatureSettings: '"tnum"' }}>
+              <aside className="flex w-[232px] shrink-0 flex-col border-r px-2.5 pt-4" style={{ background: c.card, borderColor: c.border }}>
+                <div className="mb-5 flex items-center gap-2.5 px-2">
+                  <span className="grid size-9 place-items-center rounded-[8px] border text-[15px] font-semibold" style={{ borderColor: c.border, background: c.muted }}>L</span>
+                  <span className="leading-tight"><b className="block text-[14px] font-medium">Lampara</b><span className="text-[12px]" style={{ color: c.mutedFg }}>HR · powered by Lampara</span></span>
+                </div>
+                {hrNav.map(item => (
+                  <div key={item.label} className="mb-0.5 flex items-center gap-3 rounded-[8px] px-3 py-2 text-[14px]"
+                    style={item.label === 'Payroll' ? { background: c.primary, color: c.primaryFg } : { color: c.mutedFg }}>
+                    <Icon d={item.icon} /> {item.label}
+                  </div>
+                ))}
+              </aside>
+
+              <main className="flex-1 px-7 pt-10">
+                <div className="flex items-center justify-between">
+                  <p className="flex items-center gap-3 text-[24px] font-semibold tracking-[-0.03em]">
+                    <span style={{ color: c.mutedFg }}>‹</span> Payroll · Oct 6 – Oct 20
+                    <span data-tour-run="" className="rounded-full px-2.5 py-1 text-[12px] font-normal tracking-normal" style={runState.approved.style}>{runState.approved.text}</span>
+                  </p>
+                  <span data-tour-approve="" className="inline-block rounded-[8px] px-4 py-2 text-[13px] font-medium" style={{ background: c.primary, color: c.primaryFg }}>Approve</span>
+                </div>
+
+                <div className="mt-6 grid grid-cols-4 gap-3">
+                  {payrollStats.map(s => (
+                    <div key={s.label} className="rounded-[12px] border px-4 py-3.5" style={{ background: c.card, borderColor: c.border }}>
+                      <p className="text-[13px]" style={{ color: c.mutedFg }}>{s.label}</p>
+                      <p data-tour-pay-count="" className="mt-1 font-mono text-[21px]">{s.format(s.value)}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-5 overflow-hidden rounded-[12px] border text-[13px]" style={{ background: c.card, borderColor: c.border }}>
+                  <div className="grid grid-cols-[1.6fr_1fr_.6fr_1.1fr_1.1fr_1.1fr] px-4 py-3 font-medium" style={{ background: c.muted }}>
+                    <span>Employee</span><span className="text-right">Rate</span><span className="text-right">Days</span><span className="text-right">Gross</span><span className="text-right">Deductions</span><span className="text-right">Net</span>
+                  </div>
+                  {crew.map(p => (
+                    <div key={p.name} data-tour-pay-row="" className="grid grid-cols-[1.6fr_1fr_.6fr_1.1fr_1.1fr_1.1fr] px-4 py-3" style={{ borderTop: `1px solid ${c.border}` }}>
+                      <span>{p.name}</span>
+                      <span className="text-right font-mono" style={{ color: c.mutedFg }}>{peso(p.rate)}</span>
+                      <span className="text-right font-mono">{p.days}</span>
+                      <span className="text-right font-mono">{peso(p.rate * p.days)}</span>
+                      <span className="text-right font-mono" style={{ color: c.mutedFg }}>{peso(p.ded)}</span>
+                      <span className="text-right font-mono">{peso(p.rate * p.days - p.ded)}</span>
+                    </div>
+                  ))}
+                </div>
+              </main>
+            </div>
+          </div>
+
           {/* The field tech's phone: a 330×700 screen in the same scaled units as the app, so it lines up at any width. */}
-          <div data-tour-phone="" className="absolute right-[calc(var(--s,0.5)*70px)] top-[calc(var(--s,0.5)*44px)] h-[calc(var(--s,0.5)*712px)] w-[calc(var(--s,0.5)*346px)]">
+          <div data-tour-phone="" className="opacity-0 [html.js_&]:motion-safe:opacity-100 absolute right-[calc(var(--s,0.5)*70px)] top-[calc(var(--s,0.5)*44px)] h-[calc(var(--s,0.5)*712px)] w-[calc(var(--s,0.5)*346px)]">
             <div className="h-[712px] w-[346px] origin-top-left rounded-[44px] border-[8px] border-[#2a2a2a] bg-[#0b0b0b] p-[3px] shadow-[0_40px_80px_-30px_rgba(0,0,0,.9)] [transform:scale(var(--s,0.5))]">
               <div className="relative flex h-full flex-col overflow-hidden rounded-[34px] px-5 pt-3" style={{ background: c.bg, color: c.fg, fontFeatureSettings: '"tnum"' }}>
                 <div className="flex items-center justify-between px-2 text-[12px] font-medium">
@@ -302,11 +424,30 @@ export default function LamparaTour() {
                 </div>
 
                 <span data-tour-sync="" className="mx-auto mt-auto mb-6 rounded-full px-3 py-1.5 text-[12px]" style={sync.synced.style}>{sync.synced.text}</span>
+
+                {/* Beat 4: the crew's attendance, layered over the checklist below the status bar. */}
+                <div data-tour-crew="" className="absolute inset-x-0 top-[40px] bottom-0 px-5" style={{ background: c.bg }}>
+                  <p className="mt-4 text-[12px]" style={{ color: c.mutedFg }}>Today · Regular 07:00–16:00</p>
+                  <p className="mt-1 text-[18px] font-semibold leading-tight tracking-[-0.02em]">Jose Mercado — Bacoor</p>
+                  <p className="mt-1 text-[12px]" style={{ color: c.mutedFg }}>You’re the leadman · Install, day 1 of 2</p>
+                  <div className="mt-4 overflow-hidden rounded-[12px] border" style={{ background: c.card, borderColor: c.border }}>
+                    <p className="px-3.5 py-3 text-[13px] font-medium">Your crew · <span data-tour-crew-in="">{crew.length}</span> of {crew.length} in</p>
+                    {crew.map(p => {
+                      const s = crewPill(p, true);
+                      return (
+                        <div key={p.name} className="flex items-center justify-between gap-2 px-3.5 py-2.5" style={{ borderTop: `1px solid ${c.border}` }}>
+                          <span className="text-[13px]">{p.name}</span>
+                          <span data-tour-crew-pill="" className="shrink-0 rounded-full px-2 py-0.5 text-[10.5px]" style={s.style}>{s.text}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <p className="pt-3.5 font-mono text-[10px] text-muted">Rebuilt from the Lampara CRM dashboard · Demo data</p>
+        <p className="pt-3.5 font-mono text-[10px] text-muted">Rebuilt from Lampara’s CRM and HR screens · Demo data</p>
       </div>
     </section>
   );
