@@ -30,7 +30,7 @@ function camera(el: HTMLElement, start: Cam) {
   };
 }
 
-const finFit = { x: S.FIN.w / 2, y: S.FIN.h / 2 - 20, z: 0.42 }; // leaves room for the tile labels above the top row
+const centre = { x: S.W / 2, y: S.H / 2, z: 1 };
 
 const beats = [
   ['01 · Inquiry', 'it starts with a message.'],
@@ -39,7 +39,7 @@ const beats = [
   ['04 · Schedule and warehouse', 'booked, picked, on the road.'],
   ['05 · On site', 'checked on site, synced to the office.'],
   ['06 · HR and payroll', 'attendance in, payroll out.'],
-  ['07 · Lampara', 'one system, inquiry to payday.'],
+  ['07 · Recap', 'the whole job, in one place.'],
 ];
 
 function Layer({ name, w = S.W, h = S.H, cam, children }: { name: string; w?: number; h?: number; cam?: Cam; children: ReactNode }) {
@@ -104,6 +104,7 @@ export default function LamparaTour() {
       one(L.pay, '[data-flip-num]').textContent = '14';
       all(L.pay, '[data-pay-count]').forEach((el, i) => { el.textContent = S.payrollStats[i].format(0); });
       text(one(L.pay, '[data-pay-run]'), S.runState.draft);
+      all(L.fin, '[data-r-count]').forEach((el, i) => { el.textContent = S.recap[i].format(0); });
 
       const caps = all(section, '[data-beat]');
       gsap.set(caps, { autoAlpha: 0 });
@@ -118,17 +119,20 @@ export default function LamparaTour() {
       const prepCam = camera(camEl(L.prep), { x: 640, y: 400, z: 1.35 });
       const fieldCam = camera(camEl(L.field), { x: 640, y: 400, z: 1 });
       const payCam = camera(camEl(L.pay), { x: 640, y: 400, z: 1.3 });
-      const finCam = camera(camEl(L.fin), { x: 2040, y: 1320, z: 1 }); // starts on the payroll tile
+      const finCam = camera(camEl(L.fin), { ...centre, z: 1.15 });
 
       const tl = gsap.timeline({
         defaults: { ease: 'power2.out' },
         // Pin the inner wrapper, not the <section>: the pin-spacer GSAP wraps around the pinned node must stay
         // inside a node React owns, or React can't remove the section when the page unmounts.
-        scrollTrigger: { trigger: pinEl, start: 'top top', end: '+=1300%', pin: true, scrub: 0.8 },
+        scrollTrigger: { trigger: pinEl, start: 'top top', end: '+=1900%', pin: true, scrub: 0.8 },
       });
-      const caption = (n: number, at: string) => tl
-        .to(caps[n - 2], { y: -30, autoAlpha: 0, duration: 0.35 }, at)
-        .fromTo(caps[n - 1], { y: 30, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.35 }, `${at}+=0.15`);
+      const beatStarts = [0]; // timeline time each beat's caption comes in, for the progress bar
+      const caption = (n: number, at: string) => {
+        tl.to(caps[n - 2], { y: -30, autoAlpha: 0, duration: 0.35 }, at)
+          .fromTo(caps[n - 1], { y: 30, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.35 }, `${at}+=0.15`);
+        beatStarts[n - 1] = (tl.recent() as gsap.core.Tween).startTime();
+      };
       // A scrubbed counter: tweens 0→1 (or a → b) and hands the value to `set` on every frame, both directions.
       const count = (from: number, to: number, set: (v: number) => void, vars: gsap.TweenVars, at: string) => {
         const o = { v: from };
@@ -336,15 +340,36 @@ export default function LamparaTour() {
         rotate: 0, scale: 0.3, autoAlpha: 0, stagger: 0.08, duration: 0.6, ease: 'back.out(1.4)',
       }, 'toRun+=2.8');
 
-      /* 7 · Finale: the payroll screen is already a tile; the camera pulls all the way back to the whole system. */
+      /* 7 · Recap: the camera pulls back off the payroll run into the end card; the journey line fills left to
+         right and each stop's number counts up as the line reaches it, then the call to action rises. */
+      const recapCounts = all(L.fin, '[data-r-count]');
+      const dotsR = all(L.fin, '[data-r-dot]');
+      const LINE = 1.8; // seconds of timeline for the journey line
       tl.addLabel('toFin', 'toRun+=4')
-        .set(L.fin, { autoAlpha: 1 }, 'toFin')
-        .set(L.pay, { autoAlpha: 0 }, 'toFin')
-        .add(finCam(finFit, { duration: 1.8, ease: 'power3.inOut' }), 'toFin')
-        .fromTo(all(L.fin, '[data-fin-line]'), { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.6, stagger: 0.3, ease: 'power1.inOut' }, 'toFin+=1.5')
-        .from(all(L.fin, '[data-fin-label]'), { y: 40, autoAlpha: 0, stagger: 0.12, duration: 0.4 }, 'toFin+=1.3')
+        .add(payCam({ z: 0.35 }, { duration: 0.9, ease: 'power3.in' }), 'toFin')
+        .to(L.pay, { autoAlpha: 0, duration: 0.4 }, 'toFin+=0.5')
+        .to(L.fin, { autoAlpha: 1, duration: 0.4 }, 'toFin+=0.5')
+        .add(finCam(centre, { duration: 1, ease: 'power3.out' }), 'toFin+=0.5')
+        .from(all(L.fin, '[data-r-eyebrow], [data-r-title]'), { y: 40, autoAlpha: 0, stagger: 0.12, duration: 0.5 }, 'toFin+=0.6')
+        .fromTo(one(L.fin, '[data-r-line]'), { scaleX: 0 }, { scaleX: 1, duration: LINE, ease: 'none' }, 'toFin+=1.4');
+      dotsR.forEach((el, i) => {
+        const at = `toFin+=${1.4 + (LINE * i) / (dotsR.length - 1)}`;
+        tl.from(el, { scale: 0, duration: 0.25, ease: 'back.out(3)' }, at);
+        count(0, S.recap[i].value, v => { recapCounts[i].textContent = S.recap[i].format(v); }, { duration: 0.5, ease: 'power1.out' }, at);
+      });
+      tl.from(all(L.fin, '[data-r-chip]'), { y: 20, autoAlpha: 0, stagger: 0.08, duration: 0.35 }, `toFin+=${1.6 + LINE}`)
+        .from(one(L.fin, '[data-r-cta]'), { y: 30, autoAlpha: 0, scale: 0.9, duration: 0.45, ease: 'back.out(2)' }, `toFin+=${1.9 + LINE}`)
         .to({}, { duration: 0.8 });
-      caption(7, 'toFin+=0.8');
+      caption(7, 'toFin+=0.5');
+
+      // Progress bar: one segment per beat, each filling across its own beat's stretch of the timeline.
+      const fills = all(section, '[data-progress-fill]');
+      const setBar = (time: number) => fills.forEach((el, i) => {
+        const end = beatStarts[i + 1] ?? tl.duration();
+        el.style.transform = `scaleX(${gsap.utils.clamp(0, 1, (time - beatStarts[i]) / (end - beatStarts[i]))})`;
+      });
+      tl.eventCallback('onUpdate', () => setBar(tl.time()));
+      setBar(0);
     });
 
     return () => { mm.revert(); ro.disconnect(); };
@@ -380,8 +405,16 @@ export default function LamparaTour() {
               <div className="absolute top-0 left-0"><S.FlipScreen /></div>
               <div className="absolute top-0" style={{ left: S.W + 120 }}><S.PayrollScreen /></div>
             </Layer>
-            <Layer name="fin" w={S.FIN.w} h={S.FIN.h} cam={finFit}><S.FinaleWorld /></Layer>
+            <Layer name="fin" cam={centre}><S.RecapScreen /></Layer>
           </div>
+        </div>
+        {/* Tour progress, one segment per beat (only when the tour animates). */}
+        <div className="mx-auto mt-4 hidden max-w-[min(100%,calc(70svh*1.6))] gap-1.5 [html.js_&]:motion-safe:flex" aria-hidden="true">
+          {beats.map(([eyebrow]) => (
+            <div key={eyebrow} className="h-[3px] flex-1 overflow-hidden rounded-full bg-line">
+              <div data-progress-fill="" className="h-full origin-left bg-cream" style={{ transform: 'scaleX(0)' }} />
+            </div>
+          ))}
         </div>
         <p className="pt-3.5 font-mono text-[10px] text-muted">Rebuilt from Lampara’s CRM, Warehouse and HR screens · Demo data</p>
       </div>

@@ -568,26 +568,56 @@ export function PayrollScreen() {
   );
 }
 
-/* ── Beat 7 · Finale ────────────────────────────────────────────────────── */
+/* ── Beat 7 · Recap ─────────────────────────────────────────────────────── */
 
-// Four screens as tiles on one canvas, in journey order (Z shape): CRM → Warehouse → Field → Payroll.
-export const FIN = { w: 2680, h: 1720, tiles: [[0, 0], [1400, 0], [0, 920], [1400, 920]] as const };
-const finTiles = [['CRM', DashboardScreen], ['Warehouse', WarehouseScreen], ['Field app', FieldScreen], ['HR and payroll', PayrollScreen]] as const;
+// Jose's job as five numbers along one line, one per stop of the story.
+const whole = (n: number) => String(Math.round(n));
+export const recap = [
+  { value: 1, format: whole, label: 'message on Messenger' },
+  { value: quoteTotal, format: (n: number) => '₱' + Math.round(n).toLocaleString('en-PH'), label: 'quote, signed' },
+  { value: stock.length, format: whole, label: 'items picked' },
+  { value: TOTAL_ITEMS, format: (n: number) => `${Math.round(n)}/${TOTAL_ITEMS}`, label: 'checks on site' },
+  { value: gross - deductions, format: peso, label: 'payroll approved' },
+];
+const RECAP_W = 1040;
 
-export function FinaleWorld() {
+export function RecapScreen() {
   return (
-    <div className="relative" style={{ width: FIN.w, height: FIN.h }}>
-      {finTiles.map(([label, Tile], i) => (
-        <div key={label} className="absolute" style={{ left: FIN.tiles[i][0], top: FIN.tiles[i][1] }}>
-          <p data-fin-label="" className="absolute -top-[70px] left-0 font-mono text-[40px]" style={{ color: c.mutedFg }}>0{i + 1} · {label}</p>
-          <div className="overflow-hidden rounded-[14px]"><Tile /></div>
+    <Screen>
+      <div className="flex w-full flex-col items-center justify-center text-center">
+        <p data-r-eyebrow="" className="font-mono text-[15px] tracking-[0.06em]" style={{ color: c.mutedFg }}>JOSE MERCADO · MOLINO III, BACOOR · OCT 8 – OCT 20</p>
+        <p data-r-title="" className="mt-5 text-[68px] leading-[1.02] font-semibold tracking-[-0.05em]">one system,<br />inquiry to payday.</p>
+
+        <div className="mt-16" style={{ width: RECAP_W }}>
+          <div className="grid grid-cols-5">
+            {recap.map(r => (
+              <div key={r.label}>
+                <p data-r-count="" className="font-mono text-[30px] font-semibold tracking-[-0.03em]">{r.format(r.value)}</p>
+                <Muted className="mt-1 block text-[14px]">{r.label}</Muted>
+              </div>
+            ))}
+          </div>
+          {/* The journey line: fills left to right and lights a stop under each number. */}
+          <div className="relative mt-7 h-[16px]">
+            <div className="absolute top-[7px] right-[104px] left-[104px] h-[2px]" style={{ background: c.muted }}>
+              <div data-r-line="" className="h-full origin-left" style={{ background: hue.install }} />
+            </div>
+            {recap.map((r, i) => (
+              <span key={r.label} data-r-dot="" className="absolute top-0 size-[16px] rounded-full border-[3px]"
+                style={{ left: (i + 0.5) * (RECAP_W / recap.length) - 8, background: hue.install, borderColor: c.bg }} />
+            ))}
+          </div>
         </div>
-      ))}
-      <svg viewBox={`0 0 ${FIN.w} ${FIN.h}`} className="pointer-events-none absolute inset-0" style={{ width: FIN.w, height: FIN.h }} aria-hidden="true">
-        {['M1280 400H1400', 'M2040 800C2040 880 640 840 640 920', 'M1280 1320H1400'].map(path => (
-          <path key={path} data-fin-line="" pathLength={1} strokeDasharray="1" d={path} fill="none" stroke={hue.install} strokeWidth="8" strokeLinecap="round" />
-        ))}
-      </svg>
-    </div>
+
+        <div className="mt-12 flex gap-2.5">
+          {['CRM', 'Warehouse', 'Field app', 'HR and payroll'].map(m => (
+            <span key={m} data-r-chip="" className="rounded-full border px-3.5 py-1.5 text-[14px]" style={{ borderColor: c.border, color: c.mutedFg }}>{m}</span>
+          ))}
+        </div>
+        <a data-r-cta="" href="#process" className="mt-9 rounded-full px-8 py-4 text-[19px] font-medium" style={{ background: c.primary, color: c.primaryFg }}>
+          Get a system like this →
+        </a>
+      </div>
+    </Screen>
   );
 }
